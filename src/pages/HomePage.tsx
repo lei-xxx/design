@@ -151,6 +151,7 @@ const HomePage = () => {
         className="fixed -left-2 -right-2 bottom-0 top-0 z-0 pointer-events-none origin-center md:inset-0"
         scale={1 + backgroundExitProgress * 5}
         speed={isMobileTouching ? 0 : isMobileViewport ? 1.25 : 1}
+        maxPixelCount={isMobileViewport ? 720 * 1280 : 1920 * 1080}
       />
       <div className="relative z-10">
       <section className="relative flex min-h-[100svh] items-end overflow-hidden px-7 pb-12 text-white md:hidden">
@@ -222,7 +223,7 @@ const HomePage = () => {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`group relative min-h-[170px] w-[68vw] shrink-0 snap-start overflow-hidden rounded-[22px] border border-white/10 bg-[#050505]/55 p-5 shadow-[0_22px_70px_rgba(0,0,0,0.32)] backdrop-blur-md transition-all duration-500 hover:border-white/20 hover:bg-[#080808]/65 md:min-h-[230px] md:w-auto md:rounded-[28px] md:p-6 lg:p-7 ${service.className}`}>
+                  className={`group relative min-h-[170px] w-[68vw] shrink-0 snap-start overflow-hidden rounded-[22px] border border-white/10 bg-[#050505]/55 p-5 shadow-[0_22px_70px_rgba(0,0,0,0.32)] backdrop-blur-md transition-all duration-500 hover:border-white/20 hover:bg-[#080808]/65 md:min-h-[220px] md:w-auto md:rounded-[28px] md:p-6 lg:p-7 ${service.className}`}>
 
                   <div className={`absolute inset-0 bg-gradient-to-br ${service.accent} opacity-45 transition-opacity duration-500 group-hover:opacity-65`} />
                   <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl transition-transform duration-500 group-hover:scale-125" />

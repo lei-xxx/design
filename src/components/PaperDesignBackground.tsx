@@ -6,6 +6,7 @@ type PaperDesignBackgroundProps = {
   offsetY?: number;
   scale?: number;
   speed?: number;
+  maxPixelCount?: number;
 };
 
 export function PaperDesignBackground({
@@ -13,7 +14,8 @@ export function PaperDesignBackground({
   offsetX = 0,
   offsetY = 0,
   scale = 1,
-  speed = 1
+  speed = 1,
+  maxPixelCount = 1920 * 1080
 }: PaperDesignBackgroundProps) {
   return (
     <div className={className}>
@@ -30,7 +32,7 @@ export function PaperDesignBackground({
         rotation={0}
         speed={speed}
         colors={['hsl(14, 100%, 57%)', 'hsl(45, 100%, 51%)', 'hsl(340, 82%, 52%)']}
-        maxPixelCount={1920 * 1080}
+        maxPixelCount={maxPixelCount}
       />
       <div className="absolute inset-0 bg-black/20" />
     </div>
