@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage'
 import PortfolioPage from './pages/PortfolioPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
 import ContactPage from './pages/ContactPage'
+import { publicAsset } from './lib/utils'
 
 function AppContent() {
   const location = useLocation()
@@ -26,7 +27,7 @@ function AppContent() {
   return (
     <div className="min-h-screen">
       <SignFlowNav
-        logo="/eye-nav-logo.png"
+        logo={publicAsset('/eye-nav-logo.png')}
         logoAlt="疯狂许师傅 Logo"
         links={navLinks}
       />
@@ -45,8 +46,10 @@ function AppContent() {
 }
 
 function App() {
+  const basename = import.meta.env.BASE_URL.replace(/\/$/, '')
+
   return (
-    <Router>
+    <Router basename={basename}>
       <AppContent />
     </Router>
   )

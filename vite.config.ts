@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    base: mode === 'production' ? '/design/' : '/',
     build,
     esbuild,
     define,
@@ -44,4 +45,3 @@ export default defineConfig(({ mode }) => {
     },
   }
 })
-

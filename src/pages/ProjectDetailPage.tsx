@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ChevronLeft, FileText, Play, Tag } from 'lucide-react';
 import MinimalHero from '@/components/ui/hero-minimalism';
 import { projects } from '@/data/projects';
+import { publicAsset } from '@/lib/utils';
 
 const ProjectDetailPage = () => {
   const { slug } = useParams();
@@ -136,14 +137,14 @@ const ProjectDetailPage = () => {
             >
               {media.type === 'image' ? (
                 <img
-                  src={media.src}
+                  src={publicAsset(media.src)}
                   alt={media.alt || media.title || project.title}
                   className="w-full object-contain"
                 />
               ) : media.type === 'video' ? (
                 <video
-                  src={media.src}
-                  poster={media.poster}
+                  src={publicAsset(media.src)}
+                  poster={publicAsset(media.poster)}
                   title={media.title || project.title}
                   controls
                   playsInline
@@ -151,7 +152,7 @@ const ProjectDetailPage = () => {
                 />
               ) : media.type === 'pdf' ? (
                 <iframe
-                  src={media.src}
+                  src={publicAsset(media.src)}
                   title={media.title || `${project.title} PDF`}
                   className="h-[80vh] w-full bg-white"
                 />

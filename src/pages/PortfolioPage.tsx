@@ -6,6 +6,7 @@ import {FileText, Play, RotateCcw, Tag, X, ZoomIn, ZoomOut} from 'lucide-react';
 import MinimalHero from '@/components/ui/hero-minimalism';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 import { projects, type Project } from '@/data/projects';
+import { publicAsset } from '@/lib/utils';
 
 const PortfolioPage = () => {
   const navigate = useNavigate();
@@ -129,13 +130,13 @@ const PortfolioPage = () => {
                       onClick={() => openProject(project)}
                     >
                       <img
-                      src={project.images.desktop}
+                      src={publicAsset(project.images.desktop)}
                       alt={`${project.title} - Desktop view`}
                       className="w-full rounded-lg shadow-2xl" />
                     </button>
                     <div className="relative hidden lg:block">
                       <img
-                      src={project.images.desktop}
+                      src={publicAsset(project.images.desktop)}
                       alt={`${project.title} - Desktop view`}
                       className="w-full rounded-lg shadow-2xl" />
                     </div>
@@ -224,7 +225,7 @@ const PortfolioPage = () => {
                       }}
                     >
                       <img
-                        src={activeMedia.src}
+                        src={publicAsset(activeMedia.src)}
                         alt={activeMedia.alt || selectedProject.title}
                         className="rounded-xl object-contain"
                         style={
@@ -266,8 +267,8 @@ const PortfolioPage = () => {
                   </div>
                 ) : activeMedia?.type === 'video' ? (
                   <video
-                    src={activeMedia.src}
-                    poster={activeMedia.poster}
+                    src={publicAsset(activeMedia.src)}
+                    poster={publicAsset(activeMedia.poster)}
                     title={activeMedia.title || selectedProject.title}
                     controls
                     playsInline
@@ -275,7 +276,7 @@ const PortfolioPage = () => {
                   />
                 ) : activeMedia?.type === 'pdf' ? (
                   <iframe
-                    src={activeMedia.src}
+                    src={publicAsset(activeMedia.src)}
                     title={activeMedia.title || `${selectedProject.title} PDF`}
                     className="h-[48vh] min-h-[280px] w-full rounded-2xl border border-white/10 bg-white lg:h-full lg:min-h-[600px]"
                   />
@@ -305,7 +306,7 @@ const PortfolioPage = () => {
                       >
                         {media.type === 'image' ? (
                           <img
-                            src={media.src}
+                            src={publicAsset(media.src)}
                             alt={media.alt || media.title || selectedProject.title}
                             className="h-full w-full object-cover"
                           />
