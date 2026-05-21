@@ -130,7 +130,7 @@ const ProjectDetailPage = () => {
         </div>
 
         <section className="space-y-2">
-          {project.media.map((media) => (
+          {project.media.map((media, mediaIndex) => (
             <article
               key={`${media.type}-${media.src}`}
               className="overflow-hidden bg-transparent"
@@ -139,6 +139,8 @@ const ProjectDetailPage = () => {
                 <img
                   src={publicAsset(media.src)}
                   alt={media.alt || media.title || project.title}
+                  loading={mediaIndex === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
                   className="w-full object-contain"
                 />
               ) : media.type === 'video' ? (

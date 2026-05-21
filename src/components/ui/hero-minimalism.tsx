@@ -5,14 +5,22 @@ import React, { useEffect, useRef } from "react";
 type MinimalHeroProps = {
   backgroundOnly?: boolean;
   className?: string;
+  disableParticlesOnMobile?: boolean;
 };
 
-export default function MinimalHero({ backgroundOnly = false, className = "" }: MinimalHeroProps) {
+export default function MinimalHero({
+  backgroundOnly = false,
+  className = "",
+  disableParticlesOnMobile = false,
+}: MinimalHeroProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    const mobileQuery = window.matchMedia("(max-width: 767px)");
+    if (disableParticlesOnMobile && mobileQuery.matches) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -95,10 +103,10 @@ export default function MinimalHero({ backgroundOnly = false, className = "" }: 
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [disableParticlesOnMobile]);
 
   return (
-    <section className={`minimal-root ${className}`}>
+    <section className={`minimal-root ${disableParticlesOnMobile ? "minimal-root--no-mobile-particles" : ""} ${className}`}>
       <style>{`
 .minimal-root, .minimal-root * {
   box-sizing: border-box;
@@ -128,6 +136,12 @@ export default function MinimalHero({ backgroundOnly = false, className = "" }: 
   pointer-events: none;
   mix-blend-mode: screen;
   opacity: .6;
+}
+
+@media (max-width: 767px) {
+  .minimal-root--no-mobile-particles .particleCanvas {
+    display: none;
+  }
 }
 
 .minimal-root .accent-lines {

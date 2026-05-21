@@ -6,7 +6,7 @@ import MinimalHero from '@/components/ui/hero-minimalism';
 const ContactPage = () => {
   return (
     <div className="relative overflow-hidden pt-16 bg-black">
-      <MinimalHero backgroundOnly className="z-0" />
+      <MinimalHero backgroundOnly disableParticlesOnMobile className="z-0" />
       <div className="relative z-10">
       {/* Hero Section */}
       <section className="text-white pb-8 pt-16 md:py-20">

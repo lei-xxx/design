@@ -9,6 +9,7 @@ import { SplineRobotShowcase } from '../components/SplineRobotShowcase';
 
 const HomePage = () => {
   const [backgroundExitProgress, setBackgroundExitProgress] = useState(0);
+  const [isMobileTouching, setIsMobileTouching] = useState(false);
 
   useEffect(() => {
     let frameId = 0;
@@ -32,6 +33,34 @@ const HomePage = () => {
       window.cancelAnimationFrame(frameId);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    let resumeTimer = 0;
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+
+    const pause = () => {
+      if (!mobileQuery.matches) return;
+      window.clearTimeout(resumeTimer);
+      setIsMobileTouching(true);
+    };
+
+    const resume = () => {
+      if (!mobileQuery.matches) return;
+      window.clearTimeout(resumeTimer);
+      resumeTimer = window.setTimeout(() => setIsMobileTouching(false), 300);
+    };
+
+    window.addEventListener('touchstart', pause, { passive: true });
+    window.addEventListener('touchend', resume, { passive: true });
+    window.addEventListener('touchcancel', resume, { passive: true });
+
+    return () => {
+      window.clearTimeout(resumeTimer);
+      window.removeEventListener('touchstart', pause);
+      window.removeEventListener('touchend', resume);
+      window.removeEventListener('touchcancel', resume);
     };
   }, []);
 
@@ -71,6 +100,7 @@ const HomePage = () => {
       <PaperDesignBackground
         className="fixed inset-0 z-0 pointer-events-none origin-center"
         scale={1 + backgroundExitProgress * 5}
+        speed={isMobileTouching ? 0 : 1}
       />
       <div className="relative z-10">
       {/* Hero Section - Black Background with Paper Design Shader */}

@@ -58,7 +58,7 @@ const PortfolioPage = () => {
 
   return (
     <div className="relative overflow-hidden pt-16 bg-black">
-      <MinimalHero backgroundOnly className="z-0" />
+      <MinimalHero backgroundOnly disableParticlesOnMobile className="z-0" />
       <div className="relative z-10">
       {/* Hero Section */}
       <section className="text-white pb-8 pt-16 md:py-20">
@@ -132,12 +132,16 @@ const PortfolioPage = () => {
                       <img
                       src={publicAsset(project.images.desktop)}
                       alt={`${project.title} - Desktop view`}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
                       className="w-full rounded-lg shadow-2xl" />
                     </button>
                     <div className="relative hidden lg:block">
                       <img
                       src={publicAsset(project.images.desktop)}
                       alt={`${project.title} - Desktop view`}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
                       className="w-full rounded-lg shadow-2xl" />
                     </div>
                     
@@ -227,6 +231,8 @@ const PortfolioPage = () => {
                       <img
                         src={publicAsset(activeMedia.src)}
                         alt={activeMedia.alt || selectedProject.title}
+                        loading="eager"
+                        decoding="async"
                         className="rounded-xl object-contain"
                         style={
                           imageZoom === 1
@@ -308,6 +314,8 @@ const PortfolioPage = () => {
                           <img
                             src={publicAsset(media.src)}
                             alt={media.alt || media.title || selectedProject.title}
+                            loading="lazy"
+                            decoding="async"
                             className="h-full w-full object-cover"
                           />
                         ) : (
