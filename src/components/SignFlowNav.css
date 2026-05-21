@@ -1,0 +1,26 @@
+.sign-flow-nav-link {
+  height: 24;
+  line-height: 24;
+  overflow: hidden;
+  transform: translateY(2px);
+}
+
+.sign-flow-nav-track {
+  display: flex;
+  flex-direction: column;
+  height: 48px;
+  transform: none;
+  transition: transform 300ms ease-out;
+}
+
+.sign-flow-nav-link:hover .sign-flow-nav-track {
+  transform: translateY(-44px); 
+}
+
+.sign-flow-nav-line {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  line-height: 44px;
+  white-space: nowrap;
+}
