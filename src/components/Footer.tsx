@@ -31,7 +31,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="hidden md:block">
             <h4 className="text-lg font-semibold mb-8">Quick Links</h4>
             <ul className="space-y-8">
               <li>
@@ -53,7 +53,7 @@ const Footer = () => {
           </div>
 
           {/* Services */}
-          <div>
+          <div className="hidden md:block">
             <h4 className="text-lg font-semibold mb-8">Services</h4>
             <ul className="space-y-8">
               <li>

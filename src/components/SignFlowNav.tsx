@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowUpRight } from 'lucide-react';
 import './SignFlowNav.css';
 
 interface NavLinkItem {
@@ -49,11 +50,23 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
   return (
+    <>
     <header
-      className={`fixed left-1/2 top-6 z-50 flex w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center border border-[#333] bg-[#1f1f1f57] px-8 py-4 text-white shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-[24px] transition-[border-radius] duration-0 ease-in-out sm:w-auto sm:px-10 ${headerShapeClass}`}>
+      className={`fixed left-1/2 top-6 z-[70] flex w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center px-8 py-4 text-white transition-all duration-300 ease-in-out sm:w-auto sm:border sm:border-[#333] sm:bg-[#1f1f1f57] sm:px-10 sm:shadow-[0_18px_60px_rgba(0,0,0,0.28)] sm:backdrop-blur-[24px] ${headerShapeClass}`}>
       <div className="flex w-full items-center justify-between gap-x-8 sm:gap-x-12">
-        <Link to="/" onClick={closeMenu} className="flex items-center gap-3">
+        <Link to="/" onClick={closeMenu} className="hidden items-center gap-3 sm:flex">
           <img src={logo} alt={logoAlt} className="h-8 w-8 rounded-full object-cover" />
           <span className="hidden whitespace-nowrap text-base font-bold text-white sm:block">疯狂许师傅</span>
         </Link>
@@ -74,40 +87,54 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
         </Link>
 
         <button
-          className="flex h-8 w-8 items-center justify-center text-gray-300 focus:outline-none sm:hidden"
+          className={`ml-auto flex h-[46px] w-[46px] items-center justify-center rounded-full border transition active:scale-95 focus:outline-none sm:hidden ${
+            isOpen ? 'border-white bg-white text-black' : 'border-white/75 bg-transparent text-white'
+          }`}
           onClick={toggleMenu}
           aria-label={isOpen ? 'Close Menu' : 'Open Menu'}
           type="button">
-          {isOpen ? (
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
+          <ArrowUpRight className={`h-6 w-6 transition-transform duration-300 ${isOpen ? 'rotate-[360deg]' : 'rotate-180'}`} strokeWidth={2.2} />
         </button>
       </div>
+    </header>
 
+    <div
+      className={`fixed inset-0 z-[60] bg-black/[0.66] px-5 pb-8 pt-32 text-black backdrop-blur-[32px] transition-all duration-300 sm:hidden ${
+        isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+      }`}
+      aria-hidden={!isOpen}
+    >
       <div
-        className={`flex w-full flex-col items-center overflow-hidden transition-all duration-300 ease-in-out sm:hidden ${
-          isOpen ? 'max-h-[420px] pt-4 opacity-100' : 'max-h-0 pt-0 opacity-0 pointer-events-none'
-        }`}>
-        <nav className="flex w-full flex-col items-center space-y-4 text-base">
-          {links.map(link => (
-            <Link key={link.href} to={link.href} onClick={closeMenu} className="w-full text-center text-gray-300 transition-colors hover:text-white">
-              {link.label}
-            </Link>
-          ))}
+        className={`mx-auto flex max-w-md flex-col gap-5 transition-all duration-300 ${
+          isOpen ? 'translate-y-0 scale-100' : 'translate-y-4 scale-[0.98]'
+        }`}
+      >
+        <nav className="rounded-[22px] bg-white p-7 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
+          <div className="space-y-8">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                onClick={closeMenu}
+                className="flex items-center justify-between text-[34px] font-medium uppercase leading-none tracking-[-0.02em] text-black"
+              >
+                <span>{link.label}</span>
+                {link.href === '/portfolio' && <span className="h-2.5 w-2.5 rounded-full bg-black" />}
+              </Link>
+            ))}
+          </div>
         </nav>
+
         <Link
           to="/portfolio"
           onClick={closeMenu}
-          className="mt-4 w-full rounded-full bg-gradient-to-br from-gray-100 to-gray-300 px-4 py-2 text-center text-sm font-semibold text-black transition-all duration-200 hover:from-gray-200 hover:to-gray-400">
-          View Projects
+          className="flex h-20 items-center justify-between rounded-[22px] bg-[#FF5825] px-7 text-[28px] font-medium uppercase tracking-[-0.02em] text-white shadow-[0_24px_70px_rgba(255,88,37,0.28)]"
+        >
+          <span>Projects</span>
+          <ArrowUpRight className="h-8 w-8" />
         </Link>
       </div>
-    </header>
+    </div>
+    </>
   );
 }

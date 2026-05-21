@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import {FileText, Play, RotateCcw, Tag, X, ZoomIn, ZoomOut} from 'lucide-react';
+import { ArrowUpRight, FileText, Play, RotateCcw, Tag, X, ZoomIn, ZoomOut } from 'lucide-react';
 import MinimalHero from '@/components/ui/hero-minimalism';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 import { projects, type Project } from '@/data/projects';
@@ -68,12 +68,12 @@ const PortfolioPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}>
 
-            <h1 className="text-5xl font-bold mb-12">
+            <h1 className="mb-6 text-5xl font-bold md:mb-12">
               Design 
               <span className="text-[#FF5825] text-5xl">Portfolio</span>
             </h1>
             <div className="mx-auto max-w-6xl text-white/60">
-              <p className="text-[14px] leading-relaxed text-white md:text-xl">
+              <p className="hidden text-[14px] leading-relaxed text-white md:block md:text-xl">
                 这里汇集了我的设计作品，涵盖界面设计、视觉系统、产品体验与品牌表达。每个项目都围绕真实场景展开，关注从设计策略到最终落地的完整过程。
               </p>
               <p className="mx-auto mt-5 hidden max-w-5xl text-[13px] leading-6 md:block">
@@ -108,7 +108,7 @@ const PortfolioPage = () => {
       {/* Portfolio Grid */}
       <section className="pb-16 pt-8 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-20 md:space-y-36">
+          <div className="space-y-12 md:space-y-36">
             {filteredProjects.map((project, index) =>
             <motion.div
               key={project.title}
@@ -150,20 +150,30 @@ const PortfolioPage = () => {
 
                 {/* Project Details */}
                 <div className={index % 2 === 1 ? 'lg:order-1' : ''}>
-                  <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <div className="mb-4 hidden flex-wrap items-center gap-x-4 gap-y-2 md:flex">
                     <Tag className="h-5 w-5 text-[#FF5825] mr-2" />
                     {getProjectTags(project).map((tag) => (
                       <span key={tag} className="text-[#FF5825] font-semibold">{tag}</span>
                     ))}
                   </div>
                   
-                  <h3 className="mb-5 text-3xl font-bold text-white md:mb-8">{project.title}</h3>
+                  <div className="mb-5 flex items-center justify-between gap-4 md:mb-8 md:block">
+                    <h3 className="text-[22px] font-bold text-white md:text-3xl">{project.title}</h3>
+                    <button
+                      type="button"
+                      aria-label={`View ${project.title} project`}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/80 text-white transition active:scale-95 md:hidden"
+                      onClick={() => openProject(project)}
+                    >
+                      <ArrowUpRight className="h-5 w-5" />
+                    </button>
+                  </div>
 
                   <div className="max-w-[760px] space-y-4 md:space-y-6">
-                    <p className="overflow-hidden text-white text-[16px] leading-9 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
+                    <p className="hidden overflow-hidden text-white text-[16px] leading-9 md:[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
                       {project.descriptionZh}
                     </p>
-                    <div className={`flex pt-2 md:pt-6 ${index % 2 === 0 ? 'lg:justify-end' : 'lg:justify-start'}`}>
+                    <div className={`hidden pt-2 md:flex md:pt-6 ${index % 2 === 0 ? 'lg:justify-end' : 'lg:justify-start'}`}>
                       <ButtonColorful
                         type="button"
                         label="View Project"
