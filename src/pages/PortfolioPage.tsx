@@ -1,11 +1,13 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight, FileText, Play, RotateCcw, Tag, X, ZoomIn, ZoomOut } from 'lucide-react';
 import MinimalHero from '@/components/ui/hero-minimalism';
+import GradualBlur from '@/components/GradualBlur';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 import { projects, type Project } from '@/data/projects';
+import { runCirclePageTransition } from '@/lib/pageTransition';
 import { publicAsset } from '@/lib/utils';
 
 const PortfolioPage = () => {
@@ -14,6 +16,7 @@ const PortfolioPage = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [imageZoom, setImageZoom] = useState(1);
+  const isProjectTransitioningRef = useRef(false);
 
   const categories = ['All', 'Mobile Design', 'Web Design', 'Data visualization', 'Motion Effect Design'];
 
@@ -26,14 +29,58 @@ const PortfolioPage = () => {
     setImageZoom(Math.min(2.5, Math.max(0.75, Number(nextZoom.toFixed(2)))));
   };
 
-  const openProject = (project: Project) => {
+  const preloadProjectDetailImages = (project: Project) => {
+    const sources = [
+      project.cover,
+      project.images.desktop,
+      ...project.media.flatMap((media) => {
+        if (media.type === 'image') return [media.src];
+        if (media.type === 'video' && media.poster) return [media.poster];
+        return [];
+      }),
+    ];
+
+    Array.from(new Set(sources.filter(Boolean)))
+      .slice(0, 5)
+      .forEach((source) => {
+        const image = new Image();
+        image.decoding = 'async';
+        image.loading = 'eager';
+        image.src = publicAsset(source);
+      });
+  };
+
+  const animateProjectNavigation = (project: Project, triggerElement?: HTMLElement, clickPoint?: { x: number; y: number }) => {
+    if (isProjectTransitioningRef.current) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      navigate(`/portfolio/${project.slug}`);
+      return;
+    }
+
+    isProjectTransitioningRef.current = true;
+    preloadProjectDetailImages(project);
+
+    runCirclePageTransition({
+      originX: clickPoint?.x,
+      originY: clickPoint?.y,
+      fallbackElement: triggerElement,
+      onCovered: () => navigate(`/portfolio/${project.slug}`, { state: { fromPortfolioTransition: true } }),
+      onFinish: () => {
+        isProjectTransitioningRef.current = false;
+      },
+    });
+  };
+
+  const openProject = (project: Project, triggerElement?: HTMLElement, clickPoint?: { x: number; y: number }) => {
     if (window.matchMedia('(min-width: 1024px)').matches) {
       setSelectedProject(project);
       setActiveMediaIndex(0);
       return;
     }
 
-    navigate(`/portfolio/${project.slug}`);
+    animateProjectNavigation(project, triggerElement, clickPoint);
   };
 
   useEffect(() => {
@@ -59,6 +106,18 @@ const PortfolioPage = () => {
   return (
     <div className="relative overflow-hidden pt-16 bg-black">
       <MinimalHero backgroundOnly disableParticlesOnMobile className="z-0" />
+      <GradualBlur
+        target="page"
+        position="top"
+        height="7rem"
+        strength={2.5}
+        divCount={6}
+        curve="bezier"
+        exponential
+        opacity={1}
+        className="md:hidden"
+        style={{ zIndex: 55 }}
+      />
       <div className="relative z-10">
       {/* Hero Section */}
       <section className="text-white pb-8 pt-16 md:py-20">
@@ -112,6 +171,7 @@ const PortfolioPage = () => {
             {filteredProjects.map((project, index) =>
             <motion.div
               key={project.title}
+              data-project-card
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
@@ -127,9 +187,10 @@ const PortfolioPage = () => {
                       type="button"
                       aria-label={`View ${project.title} project`}
                       className="relative block w-full cursor-pointer text-left lg:hidden"
-                      onClick={() => openProject(project)}
+                      onClick={(event) => openProject(project, event.currentTarget, { x: event.clientX, y: event.clientY })}
                     >
                       <img
+                      data-project-image
                       src={publicAsset(project.images.desktop)}
                       alt={`${project.title} - Desktop view`}
                       loading={index === 0 ? 'eager' : 'lazy'}
@@ -163,7 +224,7 @@ const PortfolioPage = () => {
                       type="button"
                       aria-label={`View ${project.title} project`}
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/80 text-white transition active:scale-95 md:hidden"
-                      onClick={() => openProject(project)}
+                      onClick={(event) => openProject(project, event.currentTarget, { x: event.clientX, y: event.clientY })}
                     >
                       <ArrowUpRight className="h-5 w-5" />
                     </button>

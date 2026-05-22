@@ -1,20 +1,34 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {ArrowRight, Star, Users, Award, Palette, Layout, Layers, Sparkles, Globe} from 'lucide-react';
 import { ShimmerButton } from '../components/ShimmerButton';
 import { PaperDesignBackground } from '../components/PaperDesignBackground';
 import { SplineRobotShowcase } from '../components/SplineRobotShowcase';
+import { projects } from '@/data/projects';
+import { runCirclePageTransition } from '@/lib/pageTransition';
+import { publicAsset } from '@/lib/utils';
+
+const MOBILE_INTRO_SEEN_KEY = 'xulei-mobile-intro-seen';
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const [shouldShowMobileIntro, setShouldShowMobileIntro] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 767px)').matches && window.localStorage.getItem(MOBILE_INTRO_SEEN_KEY) !== 'true';
+  });
   const [backgroundExitProgress, setBackgroundExitProgress] = useState(0);
   const [introTextOpacity, setIntroTextOpacity] = useState(1);
   const [isMobileTouching, setIsMobileTouching] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const lastScrollYRef = useRef(0);
   const introSnapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const introAutoScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const introSnapLockedRef = useRef(false);
+  const servicesCarouselRef = useRef<HTMLDivElement | null>(null);
+  const isPageTransitioningRef = useRef(false);
 
   useEffect(() => {
     let frameId = 0;
@@ -22,7 +36,8 @@ const HomePage = () => {
     const updateBackgroundExit = () => {
       const viewportHeight = window.innerHeight || 1;
       const isMobile = window.matchMedia('(max-width: 767px)').matches;
-      const mobileIntroOffset = isMobile ? viewportHeight : 0;
+      const hasIntroScreen = isMobile && shouldShowMobileIntro;
+      const mobileIntroOffset = hasIntroScreen ? viewportHeight : 0;
       const currentScrollY = window.scrollY;
       const nextProgress = Math.min(Math.max((window.scrollY - mobileIntroOffset) / viewportHeight, 0), 1);
       setBackgroundExitProgress(nextProgress);
@@ -37,7 +52,7 @@ const HomePage = () => {
         window.clearTimeout(introSnapTimeoutRef.current);
       }
 
-      if (!isMobile) {
+      if (!hasIntroScreen) {
         introSnapLockedRef.current = false;
         lastScrollYRef.current = currentScrollY;
         return;
@@ -80,13 +95,19 @@ const HomePage = () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
-  }, []);
+  }, [shouldShowMobileIntro]);
 
   useEffect(() => {
     let resumeTimer = 0;
     const mobileQuery = window.matchMedia('(max-width: 767px)');
 
-    const updateViewport = () => setIsMobileViewport(mobileQuery.matches);
+    const updateViewport = () => {
+      const isMobile = mobileQuery.matches;
+      setIsMobileViewport(isMobile);
+      if (!isMobile) {
+        setShouldShowMobileIntro(false);
+      }
+    };
     const pause = () => {
       if (!mobileQuery.matches) return;
       window.clearTimeout(resumeTimer);
@@ -114,7 +135,44 @@ const HomePage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!shouldShowMobileIntro) return;
+    window.localStorage.setItem(MOBILE_INTRO_SEEN_KEY, 'true');
+  }, [shouldShowMobileIntro]);
+
+  useEffect(() => {
+    if (!shouldShowMobileIntro) return;
+
+    const cancelAutoScroll = () => {
+      if (introAutoScrollTimeoutRef.current) {
+        window.clearTimeout(introAutoScrollTimeoutRef.current);
+        introAutoScrollTimeoutRef.current = null;
+      }
+    };
+
+    introAutoScrollTimeoutRef.current = window.setTimeout(() => {
+      introSnapLockedRef.current = true;
+      window.scrollTo({ top: window.innerHeight || 0, behavior: 'smooth' });
+    }, 3000);
+
+    window.addEventListener('touchstart', cancelAutoScroll, { passive: true });
+    window.addEventListener('wheel', cancelAutoScroll, { passive: true });
+
+    return () => {
+      cancelAutoScroll();
+      window.removeEventListener('touchstart', cancelAutoScroll);
+      window.removeEventListener('wheel', cancelAutoScroll);
+    };
+  }, [shouldShowMobileIntro]);
+
   const services = [
+    {
+      name: 'UI/UX Design',
+      icon: Layout,
+      description: 'Shape product flows, interface systems, and interaction details that make complex ideas feel clear and usable.',
+      className: 'lg:col-span-2',
+      accent: 'from-[#FF5825]/14 via-white/5 to-transparent'
+    },
     {
       name: 'Brand Identity Design',
       icon: Sparkles,
@@ -135,15 +193,71 @@ const HomePage = () => {
       description: 'Bring stories to life with kinetic systems, launch assets, and lightweight animation concepts for modern brands.',
       className: '',
       accent: 'from-[#FF5825]/14 via-white/5 to-transparent'
-    },
-    {
-      name: 'UI/UX Design',
-      icon: Layout,
-      description: 'Shape product flows, interface systems, and interaction details that make complex ideas feel clear and usable.',
-      className: 'lg:col-span-2',
-      accent: 'from-[#FF5825]/14 via-white/5 to-transparent'
     }
   ];
+
+  useEffect(() => {
+    if (!isMobileViewport) return;
+
+    const carouselTimer = window.setInterval(() => {
+      setActiveServiceIndex((currentIndex) => (currentIndex + 1) % services.length);
+    }, 2800);
+
+    return () => window.clearInterval(carouselTimer);
+  }, [isMobileViewport, services.length]);
+
+  useEffect(() => {
+    if (!isMobileViewport || !servicesCarouselRef.current) return;
+
+    const carousel = servicesCarouselRef.current;
+    const activeCard = carousel.children[activeServiceIndex] as HTMLElement | undefined;
+    if (!activeCard) return;
+
+    const centeredOffset = activeCard.offsetLeft - (carousel.clientWidth - activeCard.clientWidth) / 2;
+    carousel.scrollTo({
+      left: Math.max(centeredOffset, 0),
+      behavior: 'smooth',
+    });
+  }, [activeServiceIndex, isMobileViewport]);
+
+  const preloadRouteAssets = (path: string) => {
+    const sources = path === '/portfolio'
+      ? projects.slice(0, 5).flatMap((project) => [project.cover, project.images.desktop])
+      : [];
+
+    [...new Set(['/transition-assets/xulei-transition.png', ...sources])]
+      .filter(Boolean)
+      .forEach((source) => {
+        const image = new Image();
+        image.decoding = 'async';
+        image.loading = 'eager';
+        image.src = publicAsset(source);
+      });
+  };
+
+  const handleMobilePageTransition = (event: React.MouseEvent<HTMLElement>, path: string) => {
+    if (
+      !window.matchMedia('(max-width: 767px)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    if (isPageTransitioningRef.current) return;
+
+    isPageTransitioningRef.current = true;
+    preloadRouteAssets(path);
+    runCirclePageTransition({
+      originX: event.clientX,
+      originY: event.clientY,
+      fallbackElement: event.currentTarget,
+      onCovered: () => navigate(path),
+      onFinish: () => {
+        isPageTransitioningRef.current = false;
+      },
+    });
+  };
 
   return (
     <div className="relative overflow-x-hidden bg-black">
@@ -154,19 +268,21 @@ const HomePage = () => {
         maxPixelCount={isMobileViewport ? 720 * 1280 : 1920 * 1080}
       />
       <div className="relative z-10">
-      <section className="relative flex min-h-[100svh] items-end overflow-hidden px-7 pb-12 text-white md:hidden">
-        <div
-          className="w-full text-right"
-          style={{ opacity: introTextOpacity }}
-        >
-          <div className="text-[70px] font-bold uppercase leading-[0.82] tracking-[-0em]">
-            Design
+      {shouldShowMobileIntro && (
+        <section className="relative flex min-h-[100svh] items-end overflow-hidden px-7 pb-12 text-white md:hidden">
+          <div
+            className="w-full text-right"
+            style={{ opacity: introTextOpacity }}
+          >
+            <div className="text-[70px] font-bold uppercase leading-[0.82] tracking-[-0em]">
+              Design
+            </div>
+            <div className="mt-3 pr-1 text-[23px] font-500 uppercase leading-none tracking-[-0em]">
+              Xulei
+            </div>
           </div>
-          <div className="mt-3 pr-1 text-[23px] font-500 uppercase leading-none tracking-[-0em]">
-            Xulei
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Hero Section - Black Background with Paper Design Shader */}
       <section className="text-white min-h-screen flex items-center relative overflow-hidden">
@@ -189,6 +305,7 @@ const HomePage = () => {
               <div className="flex justify-center mb-2 sm:mb-3 lg:mb-4 px-4">
                 <Link
                   to="/portfolio"
+                  onClick={(event) => handleMobilePageTransition(event, '/portfolio')}
                   className="border border-white bg-transparent text-white hover:bg-white hover:text-black rounded-full font-semibold transition-all duration-200 text-center px-12 h-[72px] text-xl lg:text-[1.38rem] flex items-center justify-center w-[calc(100vw-128px)] max-w-none sm:h-20 sm:w-[374px] sm:max-w-[396px] sm:px-14">
                   View Portfolio
                 </Link>
@@ -214,7 +331,45 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-y-none px-4 pb-4 [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-2 md:auto-rows-[minmax(260px,auto)] md:overflow-visible md:px-0 md:pb-0 md:[touch-action:auto] lg:grid-cols-3 lg:gap-5">
+          <div className="-mx-4 md:hidden">
+            <div
+              ref={servicesCarouselRef}
+              className="flex h-[150px] gap-3 overflow-hidden px-4 [scrollbar-width:none] [touch-action:pan-y] [&::-webkit-scrollbar]:hidden"
+            >
+              {services.map((service, index) => {
+                const IconComponent = service.icon;
+                return (
+                  <motion.div
+                    key={service.name}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="h-full w-[78%] shrink-0">
+                    <div className="group relative h-[150px] min-h-[150px] overflow-hidden rounded-[22px] border border-white/10 bg-[#050505]/55 p-5 shadow-[0_22px_70px_rgba(0,0,0,0.32)] backdrop-blur-md">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${service.accent} opacity-45`} />
+                      <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+                      <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] [background-size:36px_36px]" />
+
+                      <div className="relative z-10 flex h-full flex-col justify-between gap-6">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] border border-white/10 bg-[#FF5825] shadow-[0_12px_28px_rgba(255,88,37,0.35)]">
+                            <IconComponent className="h-5 w-5 text-white" />
+                          </div>
+                          <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/45">
+                            0{index + 1}
+                          </span>
+                        </div>
+
+                        <h3 className="text-[18px] font-semibold leading-tight text-white">{service.name}</h3>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="hidden md:grid md:grid-cols-2 md:auto-rows-[minmax(260px,auto)] md:gap-4 lg:grid-cols-3 lg:gap-5">
             {services.map((service, index) => {
               const IconComponent = service.icon;
               return (
@@ -223,7 +378,7 @@ const HomePage = () => {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`group relative min-h-[170px] w-[68vw] shrink-0 snap-start overflow-hidden rounded-[22px] border border-white/10 bg-[#050505]/55 p-5 shadow-[0_22px_70px_rgba(0,0,0,0.32)] backdrop-blur-md transition-all duration-500 hover:border-white/20 hover:bg-[#080808]/65 md:min-h-[220px] md:w-auto md:rounded-[28px] md:p-6 lg:p-7 ${service.className}`}>
+                  className={`group relative min-h-[220px] overflow-hidden rounded-[28px] border border-white/10 bg-[#050505]/55 p-6 shadow-[0_22px_70px_rgba(0,0,0,0.32)] backdrop-blur-md transition-all duration-500 hover:border-white/20 hover:bg-[#080808]/65 lg:p-7 ${service.className}`}>
 
                   <div className={`absolute inset-0 bg-gradient-to-br ${service.accent} opacity-45 transition-opacity duration-500 group-hover:opacity-65`} />
                   <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl transition-transform duration-500 group-hover:scale-125" />
@@ -331,7 +486,7 @@ const HomePage = () => {
               your brand essence and resonate with your audience.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/contact">
+              <Link to="/contact" onClick={(event) => handleMobilePageTransition(event, '/contact')}>
                 <ShimmerButton className="shadow-2xl rounded-full border-[#dedede] bg-[linear-gradient(110deg,#dedede,45%,#ffffff,55%,#dedede)] hover:bg-[linear-gradient(110deg,#dedede,45%,#ffffff,55%,#dedede)] transition-all duration-200 w-full text-black sm:w-auto">
                   <span className="text-center text-sm leading-none font-semibold tracking-tight whitespace-pre-wrap text-black lg:text-base flex items-center justify-center">
                     Let's Collaborate
@@ -341,6 +496,7 @@ const HomePage = () => {
               </Link>
               <Link
                 to="/portfolio"
+                onClick={(event) => handleMobilePageTransition(event, '/portfolio')}
                 className="border border-white bg-transparent text-white hover:bg-white hover:text-black px-8 h-12 flex items-center justify-center rounded-full font-semibold transition-all duration-200 text-center w-full sm:w-auto">
 
                 View My Work
