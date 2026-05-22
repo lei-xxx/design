@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import './SignFlowNav.css';
 
@@ -91,6 +91,7 @@ const AnimatedNavLink = ({ href, children, onClick }: { href: string; children: 
 );
 
 export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowNavProps) {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-[48px]');
   const [isNavButtonOnLight, setIsNavButtonOnLight] = useState(false);
@@ -99,6 +100,11 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
   const shapeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const closeMenu = () => setIsOpen(false);
+  const isActiveLink = (href: string) => {
+    if (href === '/portfolio') return location.pathname === '/portfolio' || location.pathname.startsWith('/portfolio/');
+    return location.pathname === href;
+  };
+
   const updateMenuOrigin = () => {
     const rect = menuButtonRef.current?.getBoundingClientRect();
     const x = rect ? rect.left + rect.width / 2 : window.innerWidth - 56;
@@ -268,7 +274,7 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
                 className="flex items-center justify-between text-[34px] font-medium uppercase leading-none tracking-[-0.02em] text-black"
               >
                 <span>{link.label}</span>
-                {link.href === '/portfolio' && <span className="h-2.5 w-2.5 rounded-full bg-black" />}
+                {isActiveLink(link.href) && <span className="h-2.5 w-2.5 rounded-full bg-black" />}
               </Link>
             ))}
           </div>
