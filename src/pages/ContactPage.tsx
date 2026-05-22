@@ -24,9 +24,6 @@ const ContactPage = () => {
               <p className="hidden text-[14px] leading-relaxed text-white md:block md:text-xl">
                 感谢您访问我的作品集。我专注于将创意与用户体验相结合，通过精细的界面设计和交互方案，帮助项目从概念落地到实际应用。如果您对合作、项目或任何设计相关问题感兴趣，欢迎随时联系我。
               </p>
-              <p className="mx-auto mt-5 hidden max-w-5xl text-[13px] leading-6 md:block">
-                Thank you for visiting my portfolio. I focus on combining creativity with user experience, using refined interface design and interaction solutions to help projects move from concept to real-world application. If you are interested in collaboration, projects, or any design-related questions, feel free to contact me.
-              </p>
             </div>
           </motion.div>
         </div>
@@ -49,8 +46,8 @@ const ContactPage = () => {
                 <div>
                   <h3 className="mb-5 text-[16px] font-semibold text-white md:mb-7 md:text-[18px]">Email</h3>
                   <div className="flex flex-col items-center justify-center gap-3 text-[16px] text-white/60 md:flex-row md:gap-20 md:text-[18px]">
-                    <p>xuleixulei2021@qq.com</p>
-                    <p>xuleixulei2021@gmail.com</p>
+                    <p className="text-[16px] md:text-[18px]">xuleixulei2021@qq.com</p>
+                    <p className="text-[16px] md:text-[18px]">xuleixulei2021@gmail.com</p>
                   </div>
                 </div>
 

@@ -19,9 +19,22 @@ const PortfolioPage = () => {
   const isProjectTransitioningRef = useRef(false);
 
   const categories = ['All', 'Mobile Design', 'Web Design', 'Data visualization', 'Motion Effect Design'];
+  const allPrioritySlugs = [
+    'personnel-logistics-management-system',
+    'human-resources-management-system',
+    'petro-mesh-international-dmcc',
+  ];
 
   const filteredProjects = filter === 'All' ?
-  projects :
+  [...projects].sort((a, b) => {
+    const aIndex = allPrioritySlugs.indexOf(a.slug);
+    const bIndex = allPrioritySlugs.indexOf(b.slug);
+
+    if (aIndex === -1 && bIndex === -1) return 0;
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+    return aIndex - bIndex;
+  }) :
   projects.filter((project) => (project.tags ?? [project.category]).includes(filter));
   const activeMedia = selectedProject?.media[activeMediaIndex];
   const getProjectTags = (project: Project) => project.tags ?? [project.category];
@@ -134,9 +147,6 @@ const PortfolioPage = () => {
             <div className="mx-auto max-w-6xl text-white/60">
               <p className="hidden text-[14px] leading-relaxed text-white md:block md:text-xl">
                 这里汇集了我的设计作品，涵盖界面设计、视觉系统、产品体验与品牌表达。每个项目都围绕真实场景展开，关注从设计策略到最终落地的完整过程。
-              </p>
-              <p className="mx-auto mt-5 hidden max-w-5xl text-[13px] leading-6 md:block">
-                This portfolio brings together my recent design work across interface design, visual systems, product experience, and brand expression. Each project is shaped around real scenarios, focusing on the full process from design strategy to final implementation.
               </p>
             </div>
           </motion.div>

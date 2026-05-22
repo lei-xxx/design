@@ -177,7 +177,7 @@ const HomePage = () => {
       name: 'Brand Identity Design',
       icon: Sparkles,
       description: 'Build a distinctive visual language, logo system, and brand foundation that makes every touchpoint feel intentional.',
-      className: 'lg:col-span-2',
+      className: '',
       accent: 'from-[#FF5825]/14 via-white/5 to-transparent'
     },
     {
@@ -191,7 +191,7 @@ const HomePage = () => {
       name: 'Motion Graphics',
       icon: Layers,
       description: 'Bring stories to life with kinetic systems, launch assets, and lightweight animation concepts for modern brands.',
-      className: '',
+      className: 'lg:col-span-2',
       accent: 'from-[#FF5825]/14 via-white/5 to-transparent'
     }
   ];
@@ -369,7 +369,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="hidden md:grid md:grid-cols-2 md:auto-rows-[minmax(260px,auto)] md:gap-4 lg:grid-cols-3 lg:gap-5">
+          <div className="hidden md:grid md:grid-flow-dense md:grid-cols-2 md:auto-rows-[minmax(260px,auto)] md:gap-4 lg:grid-cols-3 lg:gap-5">
             {services.map((service, index) => {
               const IconComponent = service.icon;
               return (

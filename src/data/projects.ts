@@ -241,4 +241,79 @@ export const projects: Project[] = [
       { type: 'image', title: 'Page 09', src: '/projects/petro-mesh-international-dmcc/49.webp', alt: 'PETRO MESH INTERNATIONAL DMCC page 09' },
     ],
   },
+  {
+    slug: 'logo-dynamic-effect-01',
+    title: 'LOGO动效 01',
+    category: 'Motion Effect Design',
+    descriptionZh:
+      '该项目展示 LOGO 动态演绎效果，通过节奏、形态变化和品牌识别元素的组合，强化标识在数字媒介中的记忆点与视觉表现力。',
+    cover: '/projects/logo-dynamic-effect-01/cover.png',
+    images: {
+      desktop: '/projects/logo-dynamic-effect-01/cover.png',
+      mobile: '/projects/logo-dynamic-effect-01/cover.png',
+    },
+    media: [
+      { type: 'image', title: 'LOGO 动效 01', src: '/projects/logo-dynamic-effect-01/animation.gif', alt: 'LOGO 动效 01' },
+    ],
+  },
+  {
+    slug: 'logo-dynamic-effect-02',
+    title: 'LOGO动效 02',
+    category: 'Motion Effect Design',
+    descriptionZh:
+      '该项目展示 LOGO 动态演绎效果，通过节奏、形态变化和品牌识别元素的组合，强化标识在数字媒介中的记忆点与视觉表现力。',
+    cover: '/projects/logo-dynamic-effect-02/cover.png',
+    images: {
+      desktop: '/projects/logo-dynamic-effect-02/cover.png',
+      mobile: '/projects/logo-dynamic-effect-02/cover.png',
+    },
+    media: [
+      { type: 'image', title: 'LOGO 动效 02', src: '/projects/logo-dynamic-effect-02/animation.gif', alt: 'LOGO 动效 02' },
+    ],
+  },
+  {
+    slug: 'logo-dynamic-effect-03',
+    title: 'LOGO动效 03',
+    category: 'Motion Effect Design',
+    descriptionZh:
+      '该项目展示 LOGO 动态演绎效果，通过节奏、形态变化和品牌识别元素的组合，强化标识在数字媒介中的记忆点与视觉表现力。',
+    cover: '/projects/logo-dynamic-effect-03/cover.png',
+    images: {
+      desktop: '/projects/logo-dynamic-effect-03/cover.png',
+      mobile: '/projects/logo-dynamic-effect-03/cover.png',
+    },
+    media: [
+      { type: 'image', title: 'LOGO 动效 03', src: '/projects/logo-dynamic-effect-03/animation.gif', alt: 'LOGO 动效 03' },
+    ],
+  },
+  {
+    slug: 'logo-dynamic-effect-04',
+    title: 'LOGO动效 04',
+    category: 'Motion Effect Design',
+    descriptionZh:
+      '该项目展示 LOGO 动态演绎效果，通过节奏、形态变化和品牌识别元素的组合，强化标识在数字媒介中的记忆点与视觉表现力。',
+    cover: '/projects/logo-dynamic-effect-04/cover.png',
+    images: {
+      desktop: '/projects/logo-dynamic-effect-04/cover.png',
+      mobile: '/projects/logo-dynamic-effect-04/cover.png',
+    },
+    media: [
+      { type: 'image', title: 'LOGO 动效 04', src: '/projects/logo-dynamic-effect-04/animation.gif', alt: 'LOGO 动效 04' },
+    ],
+  },
+  {
+    slug: 'logo-dynamic-effect-05',
+    title: 'LOGO动效 05',
+    category: 'Motion Effect Design',
+    descriptionZh:
+      '该项目展示 LOGO 动态演绎效果，通过节奏、形态变化和品牌识别元素的组合，强化标识在数字媒介中的记忆点与视觉表现力。',
+    cover: '/projects/logo-dynamic-effect-05/cover.png',
+    images: {
+      desktop: '/projects/logo-dynamic-effect-05/cover.png',
+      mobile: '/projects/logo-dynamic-effect-05/cover.png',
+    },
+    media: [
+      { type: 'image', title: 'LOGO 动效 05', src: '/projects/logo-dynamic-effect-05/animation.gif', alt: 'LOGO 动效 05' },
+    ],
+  },
 ];
