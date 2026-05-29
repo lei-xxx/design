@@ -72,7 +72,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col lg:flex-row justify-between items-center">
           <p className="text-white/60 text-sm mb-4 lg:mb-0">
-            © 2024 DevCraft. All rights reserved.
+            © 2026 Xu Lei. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="text-white/60 hover:text-white text-sm transition-colors">
