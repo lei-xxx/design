@@ -43,7 +43,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
             <Code className={`h-8 w-8 ${isScrolled ? 'text-black' : 'text-white'}`} />
-            <span className={`text-xl font-bold ${isScrolled ? 'text-black' : 'text-white'}`}>
+            <span className={`text-xl font-semibold ${isScrolled ? 'text-black' : 'text-white'}`}>
               DevCraft
             </span>
           </Link>

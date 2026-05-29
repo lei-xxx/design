@@ -128,24 +128,24 @@ const PortfolioPage = () => {
         curve="bezier"
         exponential
         opacity={1}
-        className="md:hidden"
+        className="lg:hidden"
         style={{ zIndex: 55 }}
       />
       <div className="relative z-10">
       {/* Hero Section */}
-      <section className="text-white pb-8 pt-16 md:py-20">
+      <section className="text-white pb-8 pt-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}>
 
-            <h1 className="mb-6 text-5xl font-bold md:mb-12">
+            <h1 className="mb-6 text-5xl font-semibold lg:mb-12">
               Design 
               <span className="text-[#FF5825] text-5xl">Portfolio</span>
             </h1>
             <div className="mx-auto max-w-6xl text-white/60">
-              <p className="hidden text-[14px] leading-relaxed text-white md:block md:text-xl">
+              <p className="hidden text-[14px] leading-relaxed text-white lg:block lg:text-xl">
                 这里汇集了我的设计作品，涵盖界面设计、视觉系统、产品体验与品牌表达。每个项目都围绕真实场景展开，关注从设计策略到最终落地的完整过程。
               </p>
             </div>
@@ -154,14 +154,14 @@ const PortfolioPage = () => {
       </section>
 
       {/* Filter Tabs */}
-      <section className="py-4 md:py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center gap-4">
+      <section className="py-4 lg:py-8">
+        <div className="mx-auto max-w-7xl px-0 lg:px-8">
+          <div className="flex snap-x snap-mandatory flex-nowrap gap-4 overflow-x-auto px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6 md:flex-wrap md:justify-center md:overflow-visible md:px-16 lg:px-0">
             {categories.map((category) =>
             <button
               key={category}
               onClick={() => setFilter(category)}
-              className={`px-6 py-2 rounded-full font-semibold transition-all duration-200 ${
+              className={`shrink-0 snap-start whitespace-nowrap px-6 py-2 rounded-full !font-normal transition-all duration-200 ${
               filter === category ?
               'bg-[#FF5825] text-white' :
               'bg-black/20 text-white/60 hover:bg-white hover:text-black'}`
@@ -175,9 +175,9 @@ const PortfolioPage = () => {
       </section>
 
       {/* Portfolio Grid */}
-      <section className="pb-16 pt-8 md:py-20">
+      <section className="pb-16 pt-8 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-12 md:space-y-36">
+          <div className="space-y-12 lg:space-y-36">
             {filteredProjects.map((project, index) =>
             <motion.div
               key={project.title}
@@ -185,7 +185,7 @@ const PortfolioPage = () => {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
-              className={`grid grid-cols-1 gap-6 items-center md:gap-12 ${
+              className={`grid grid-cols-1 gap-4 items-center lg:gap-12 ${
                 index % 2 === 0 ? 'lg:grid-cols-[2.6fr_2fr]' : 'lg:grid-cols-[2fr_2.6fr]'
               }`}>
 
@@ -196,7 +196,7 @@ const PortfolioPage = () => {
                     <button
                       type="button"
                       aria-label={`View ${project.title} project`}
-                      className="relative block w-full cursor-pointer text-left lg:hidden"
+	                      className="relative mx-auto block w-full cursor-pointer text-left md:w-4/5 lg:hidden"
                       onClick={(event) => openProject(project, event.currentTarget, { x: event.clientX, y: event.clientY })}
                     >
                       <img
@@ -220,31 +220,31 @@ const PortfolioPage = () => {
                 </div>
 
                 {/* Project Details */}
-                <div className={index % 2 === 1 ? 'lg:order-1' : ''}>
-                  <div className="mb-4 hidden flex-wrap items-center gap-x-4 gap-y-2 md:flex">
+                <div className={`${index % 2 === 1 ? 'lg:order-1' : ''} md:mx-auto md:w-4/5 lg:mx-0 lg:w-auto`}>
+                  <div className="mb-4 hidden flex-wrap items-center gap-x-4 gap-y-2 lg:flex">
                     <Tag className="h-5 w-5 text-[#FF5825] mr-2" />
                     {getProjectTags(project).map((tag) => (
                       <span key={tag} className="text-[#FF5825] font-semibold">{tag}</span>
                     ))}
                   </div>
                   
-                  <div className="mb-5 flex items-center justify-between gap-4 md:mb-8 md:block">
-                    <h3 className="text-[22px] font-bold text-white md:text-3xl">{project.title}</h3>
+                  <div className="mb-5 flex items-center justify-between gap-4 lg:mb-8 lg:block">
+                    <h3 className="text-[22px] font-semibold text-white lg:text-3xl">{project.title}</h3>
                     <button
                       type="button"
                       aria-label={`View ${project.title} project`}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/80 text-white transition active:scale-95 md:hidden"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/80 text-white transition active:scale-95 lg:hidden"
                       onClick={(event) => openProject(project, event.currentTarget, { x: event.clientX, y: event.clientY })}
                     >
                       <ArrowUpRight className="h-5 w-5" />
                     </button>
                   </div>
 
-                  <div className="max-w-[760px] space-y-4 md:space-y-6">
-                    <p className="hidden overflow-hidden text-white text-[16px] leading-9 md:[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
+                  <div className="max-w-[760px] space-y-4 lg:space-y-6">
+                    <p className="hidden overflow-hidden text-white text-[16px] leading-9 lg:[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
                       {project.descriptionZh}
                     </p>
-                    <div className={`hidden pt-2 md:flex md:pt-6 ${index % 2 === 0 ? 'lg:justify-end' : 'lg:justify-start'}`}>
+                    <div className={`hidden pt-2 lg:flex lg:pt-6 ${index % 2 === 0 ? 'lg:justify-end' : 'lg:justify-start'}`}>
                       <ButtonColorful
                         type="button"
                         label="View Project"
@@ -284,7 +284,7 @@ const PortfolioPage = () => {
                     <span key={tag} className="text-sm font-semibold">{tag}</span>
                   ))}
                 </div>
-                <h2 className="text-2xl font-bold text-white sm:text-3xl">{selectedProject.title}</h2>
+                <h2 className="text-2xl font-semibold text-white sm:text-3xl">{selectedProject.title}</h2>
               </div>
               <button
                 type="button"

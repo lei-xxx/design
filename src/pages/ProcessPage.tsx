@@ -87,7 +87,7 @@ const ProcessPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl font-bold mb-6">
+            <h1 className="text-5xl font-semibold mb-6">
               Our 
               <span className="text-[#FF5825] text-5xl"> Development Process</span>
             </h1>
@@ -123,7 +123,7 @@ const ProcessPage = () => {
                     </div>
                     {/* Step Number */}
                     <div className="absolute -top-2 -right-2 h-6 w-6 bg-black border-2 border-[#FF5825] rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-[#FF5825]">{step.step}</span>
+                      <span className="text-xs font-semibold text-[#FF5825]">{step.step}</span>
                     </div>
                   </div>
 
@@ -131,7 +131,7 @@ const ProcessPage = () => {
                   <div className="ml-8 flex-1">
                     <div className="bg-black rounded-xl p-8">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-2xl font-bold text-white">{step.title}</h3>
+                        <h3 className="text-2xl font-semibold text-white">{step.title}</h3>
                         <span className="bg-[#FF5825] text-white px-3 py-1 rounded-full text-sm font-semibold">
                           {step.timeline}
                         </span>

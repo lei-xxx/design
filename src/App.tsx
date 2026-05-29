@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { Toaster } from 'react-hot-toast'
 import SignFlowNav from './components/SignFlowNav'
 import Footer from './components/Footer'
+import StartupLoader from './components/StartupLoader'
 import HomePage from './pages/HomePage'
 import PortfolioPage from './pages/PortfolioPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
@@ -40,6 +41,7 @@ function AppContent() {
         </Routes>
       </main>
       <Footer />
+      <StartupLoader />
       <Toaster position="top-right" />
     </div>
   )

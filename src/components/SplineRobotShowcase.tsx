@@ -6,12 +6,12 @@ export function SplineRobotShowcase() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [shouldLoadSpline, setShouldLoadSpline] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return !window.matchMedia('(max-width: 767px)').matches;
+    return !window.matchMedia('(max-width: 1023px)').matches;
   });
 
   useEffect(() => {
     if (shouldLoadSpline) return;
-    if (!window.matchMedia('(max-width: 767px)').matches) {
+    if (!window.matchMedia('(max-width: 1023px)').matches) {
       setShouldLoadSpline(true);
       return;
     }
@@ -34,7 +34,7 @@ export function SplineRobotShowcase() {
   }, [shouldLoadSpline]);
 
   const handleSplineLoad = useCallback((spline: Application) => {
-    if (!window.matchMedia('(max-width: 767px)').matches) return;
+    if (!window.matchMedia('(max-width: 1023px)').matches) return;
 
     const mobilePixelRatio = 1;
     const internalSpline = spline as Application & {

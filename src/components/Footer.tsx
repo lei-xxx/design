@@ -7,10 +7,10 @@ const Footer = () => {
   return (
     <footer className="relative z-10 bg-transparent text-white pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Company Info */}
-          <div className="md:col-span-2">
-            <h3 className="text-2xl font-bold mb-8">疯狂许师傅</h3>
+          <div className="lg:col-span-2">
+            <h3 className="text-2xl font-semibold mb-8">疯狂许师傅</h3>
             <p className="text-white/60 mb-8 max-w-md">
               Welcome to my portfolio website of design works, let's explore the stories of inspiration through creation together.
             </p>
@@ -31,7 +31,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <h4 className="text-lg font-semibold mb-8">Quick Links</h4>
             <ul className="space-y-8">
               <li>
@@ -53,7 +53,7 @@ const Footer = () => {
           </div>
 
           {/* Services */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <h4 className="text-lg font-semibold mb-8">Services</h4>
             <ul className="space-y-8">
               <li>
@@ -70,8 +70,8 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-white/60 text-sm mb-4 md:mb-0">
+        <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col lg:flex-row justify-between items-center">
+          <p className="text-white/60 text-sm mb-4 lg:mb-0">
             © 2024 DevCraft. All rights reserved.
           </p>
           <div className="flex space-x-6">

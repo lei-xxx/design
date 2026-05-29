@@ -19,7 +19,7 @@ export default function MinimalHero({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const mobileQuery = window.matchMedia("(max-width: 767px)");
+    const mobileQuery = window.matchMedia("(max-width: 1023px)");
     if (disableParticlesOnMobile && mobileQuery.matches) return;
 
     const ctx = canvas.getContext("2d");
@@ -138,7 +138,7 @@ export default function MinimalHero({
   opacity: .6;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .minimal-root--no-mobile-particles .particleCanvas {
     display: none;
   }

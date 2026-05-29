@@ -70,7 +70,7 @@ const PricingPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}>
 
-            <h1 className="text-5xl font-bold mb-6">
+            <h1 className="text-5xl font-semibold mb-6">
               Transparent Pricing for 
               <span className="text-[#FF5825] text-5xl">Every Need</span>
             </h1>
@@ -108,9 +108,9 @@ const PricingPage = () => {
               }
 
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-white mb-2">{pkg.name}</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-2">{pkg.name}</h3>
                   <p className="text-white/60 text-sm mb-4">{pkg.target}</p>
-                  <div className="text-4xl font-bold text-white">{pkg.price}</div>
+                  <div className="text-4xl font-semibold text-white">{pkg.price}</div>
                   {pkg.price !== 'Custom Quote' &&
                 <p className="text-white/60 text-sm mt-1">One-time payment</p>
                 }
@@ -148,7 +148,7 @@ const PricingPage = () => {
             className="mt-16 text-center">
 
             <div className="bg-black rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-4">
+              <h3 className="text-2xl font-semibold text-white mb-4">
                 Not Sure Which Plan is Right for You?
               </h3>
               <p className="text-white/60 mb-6 max-w-2xl mx-auto">
@@ -172,7 +172,7 @@ const PricingPage = () => {
             transition={{ duration: 0.8 }}
             className="mt-16">
 
-            <h3 className="text-3xl font-bold text-white text-center mb-12">
+            <h3 className="text-3xl font-semibold text-white text-center mb-12">
               What's Included in Every Package
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
