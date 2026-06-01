@@ -95,14 +95,14 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
   return (
     <>
     <header
-      className={`fixed left-1/2 top-6 z-[70] flex w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center px-8 py-4 text-white transition-all duration-300 ease-in-out lg:w-auto lg:border lg:border-[#333] lg:bg-[#1f1f1f57] lg:px-10 lg:shadow-[0_18px_60px_rgba(0,0,0,0.28)] lg:backdrop-blur-[24px] ${headerShapeClass}`}>
-      <div className="flex w-full items-center justify-between gap-x-8 lg:gap-x-12">
+      className={`sign-flow-header fixed left-1/2 top-6 z-[70] flex w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center px-8 py-4 text-white transition-all duration-300 ease-in-out lg:w-auto lg:border lg:border-[#333] lg:bg-[#1f1f1f57] lg:px-8 lg:shadow-[0_18px_60px_rgba(0,0,0,0.28)] lg:backdrop-blur-[24px] ${headerShapeClass}`}>
+      <div className="relative z-10 flex w-full items-center justify-between gap-x-8 lg:gap-x-16">
         <Link to="/" onClick={closeMenu} className="hidden items-center gap-3 lg:flex">
-          <img src={logo} alt={logoAlt} className="h-8 w-8 rounded-full object-cover" />
-          <span className="hidden whitespace-nowrap text-base font-semibold text-white lg:block">疯狂许师傅</span>
+          <img src={logo} alt={logoAlt} className="h-11 w-11 rounded-full object-cover" />
+          <span className="hidden whitespace-nowrap text-base font-medium text-white lg:block">Crazy Master Xu</span>
         </Link>
 
-        <nav className="hidden items-center space-x-5 lg:flex lg:space-x-9">
+        <nav className="hidden items-center space-x-5 lg:flex lg:space-x-16">
           {links.map(link => (
             <AnimatedNavLink key={link.href} href={link.href}>
               {link.label}
@@ -110,9 +110,9 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
           ))}
         </nav>
 
-        <Link to="/portfolio" onClick={closeMenu} className="relative hidden shrink-0 lg:block">
+        <Link to="/portfolio" onClick={closeMenu} className="sign-flow-cta relative hidden shrink-0 lg:block">
           <span className="absolute inset-0 -m-2 rounded-full bg-gray-100 opacity-35 blur-lg transition-all duration-300 ease-out hover:opacity-60 hover:blur-xl" />
-          <span className="relative z-10 inline-flex whitespace-nowrap rounded-full bg-gradient-to-br from-gray-100 to-gray-300 px-5 py-2.5 text-base font-semibold text-black transition-all duration-200 hover:from-gray-200 hover:to-gray-400">
+          <span className="sign-flow-cta-inner relative z-10 inline-flex whitespace-nowrap rounded-full bg-gradient-to-br from-gray-100 to-gray-300 px-5 py-2.5 text-base font-semibold text-black transition-all duration-200 hover:from-gray-200 hover:to-gray-400">
             View Projects
           </span>
         </Link>
