@@ -56,8 +56,7 @@ export default function StartupLoader() {
   const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
-    const isMobileOrTablet = window.matchMedia('(max-width: 1023px)').matches;
-    if (!isMobileOrTablet || sessionStorage.getItem(LOADER_SESSION_KEY) === 'true') return;
+    if (sessionStorage.getItem(LOADER_SESSION_KEY) === 'true') return;
 
     let isMounted = true;
     const previousOverflow = document.body.style.overflow;

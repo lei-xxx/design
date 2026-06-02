@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {Mail, Phone, MapPin} from 'lucide-react';
+import {ExternalLink, Mail, Phone, MapPin} from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -27,6 +27,15 @@ const Footer = () => {
                 <MapPin className="h-5 w-5 text-[#FF5825] mr-3" />
                 <span className="text-white/60">China, Shenzhen</span>
               </div>
+              <a
+                href="https://www.zcool.com.cn/u/24205250"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center text-white/60 transition-colors hover:text-[#FF5825]"
+              >
+                <ExternalLink className="h-5 w-5 text-[#FF5825] mr-3" />
+                <span>zcool.com.cn/u/24205250</span>
+              </a>
             </div>
           </div>
 

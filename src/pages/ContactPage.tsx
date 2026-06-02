@@ -60,6 +60,18 @@ const ContactPage = () => {
                   <h3 className="mb-5 text-[16px] font-semibold text-white lg:mb-7 lg:text-[18px]">Location</h3>
                   <p className="text-[16px] text-white/60 lg:text-[18px]">China, Shenzhen</p>
                 </div>
+
+                <div>
+                  <h3 className="mb-5 text-[16px] font-semibold text-white lg:mb-7 lg:text-[18px]">ZCOOL</h3>
+                  <a
+                    href="https://www.zcool.com.cn/u/24205250"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[16px] text-white/60 transition-colors hover:text-[#FF5825] lg:text-[18px]"
+                  >
+                    zcool.com.cn/u/24205250
+                  </a>
+                </div>
               </div>
             </motion.div>
           </div>

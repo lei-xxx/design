@@ -84,7 +84,7 @@ const ProjectDetailPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black pt-24 text-white">
+    <div className="relative min-h-screen overflow-hidden bg-black pt-24 text-white xl:pt-36">
       <button
         ref={backButtonRef}
         type="button"
@@ -92,6 +92,14 @@ const ProjectDetailPage = () => {
         className={`fixed right-[106px] top-10 z-[80] inline-flex h-[46px] min-w-[90px] items-center justify-center rounded-full border bg-transparent px-6 text-[13px] font-semibold uppercase tracking-[0.04em] transition active:scale-95 md:right-[120px] md:h-[55px] md:min-w-[112px] md:px-8 md:text-[15px] lg:hidden ${
           isBackButtonOnLight ? 'border-black/75 text-black' : 'border-white/55 text-white'
         }`}
+        aria-label="Back"
+      >
+        Back
+      </button>
+      <button
+        type="button"
+        onClick={(event) => goBack(event.currentTarget, { x: event.clientX, y: event.clientY })}
+        className="fixed left-8 top-10 z-[80] hidden h-[56px] min-w-[132px] items-center justify-center rounded-full border border-white/18 bg-black/15 px-9 text-[15px] font-semibold uppercase tracking-[0.04em] text-white shadow-[0_18px_48px_rgba(0,0,0,0.28)] backdrop-blur-[10px] transition hover:border-white/36 hover:bg-white/[0.06] active:scale-95 lg:inline-flex"
         aria-label="Back"
       >
         Back
@@ -112,7 +120,7 @@ const ProjectDetailPage = () => {
         initial={isEnteringFromPortfolio ? { opacity: 0, y: 10 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, delay: isEnteringFromPortfolio ? 0.18 : 0 }}
-        className="relative z-10 mx-auto max-w-5xl px-4 pb-20 sm:px-6 lg:px-8"
+        className="relative z-10 mx-auto max-w-5xl px-4 pb-20 sm:px-6 lg:px-8 xl:max-w-[1480px]"
       >
         <div className="mb-10">
           <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[#FF5825]">
