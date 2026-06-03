@@ -21,8 +21,8 @@ const ContactPage = () => {
               <span className="text-[#FF5825] text-5xl">Start Building</span>
             </h1>
             <div className="mx-auto max-w-6xl text-white/60">
-              <p className="hidden text-[14px] leading-relaxed text-white lg:block lg:text-xl">
-                感谢您访问我的作品集。我专注于将创意与用户体验相结合，通过精细的界面设计和交互方案，帮助项目从概念落地到实际应用。如果您对合作、项目或任何设计相关问题感兴趣，欢迎随时联系我。
+              <p className="hidden text-[14px] leading-[1.75] text-white/55 lg:block lg:text-xl">
+                Thanks for visiting my portfolio. I focus on bringing creativity and user experience together through refined interface design and interaction solutions that help ideas move from concept to real products.
               </p>
             </div>
           </motion.div>

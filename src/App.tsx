@@ -28,7 +28,7 @@ function AppContent() {
   return (
     <div className="min-h-screen">
       <SignFlowNav
-        logo={publicAsset('/xulei-nav-logo.png')}
+        logo={publicAsset('/xulei-wordmark-logo.png')}
         logoAlt="疯狂许师傅 Logo"
         links={navLinks}
       />

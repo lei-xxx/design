@@ -95,7 +95,6 @@ const PortfolioPage = () => {
         curve="bezier"
         exponential
         opacity={1}
-        className="lg:hidden"
         style={{ zIndex: 55 }}
       />
       <div className="relative z-10">
@@ -112,8 +111,8 @@ const PortfolioPage = () => {
               <span className="text-[#FF5825] text-5xl">Portfolio</span>
             </h1>
             <div className="mx-auto max-w-6xl text-white/60">
-              <p className="hidden text-[14px] leading-relaxed text-white lg:block lg:text-xl">
-                这里汇集了我的设计作品，涵盖界面设计、视觉系统、产品体验与品牌表达。每个项目都围绕真实场景展开，关注从设计策略到最终落地的完整过程。
+              <p className="hidden text-[14px] leading-[1.75] text-white/55 lg:block lg:text-xl">
+                A curated collection of my design work across interface design, visual systems, product experience, and brand expression. Each project is shaped around real scenarios, from design strategy to final implementation.
               </p>
             </div>
           </motion.div>
@@ -122,21 +121,25 @@ const PortfolioPage = () => {
 
       {/* Filter Tabs */}
       <section className="py-4 lg:py-8">
-        <div className="mx-auto max-w-7xl px-0 lg:px-8">
-          <div className="flex snap-x snap-mandatory flex-nowrap gap-4 overflow-x-auto px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6 md:flex-wrap md:justify-center md:overflow-visible md:px-16 lg:px-0">
-            {categories.map((category) =>
-            <button
-              key={category}
-              onClick={() => setFilter(category)}
-              className={`shrink-0 snap-start whitespace-nowrap px-6 py-2 rounded-full !font-normal transition-all duration-200 ${
-              filter === category ?
-              'bg-[#FF5825] text-white' :
-              'bg-black/20 text-white/60 hover:bg-white hover:text-black'}`
-              }>
-
-                {category}
-              </button>
-            )}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="overflow-x-auto border-b border-white/20 pb-8 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-auto md:w-4/5 lg:w-full [&::-webkit-scrollbar]:hidden lg:pb-10">
+            <div className="flex w-max snap-x snap-mandatory flex-nowrap items-center gap-5 lg:gap-8">
+              {categories.map((category, categoryIndex) => (
+                <React.Fragment key={category}>
+                  <button
+                    onClick={() => setFilter(category)}
+                    className={`shrink-0 snap-start whitespace-nowrap text-[16px] font-normal leading-none transition-colors duration-200 md:text-[20px] lg:text-[clamp(20px,1.25vw,24px)] ${
+                      filter === category ? 'text-white' : 'text-white/25 hover:text-white/55'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                  {categoryIndex < categories.length - 1 && (
+                    <span className="h-px w-4 shrink-0 bg-white/18 lg:w-6" aria-hidden="true" />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
       </section>

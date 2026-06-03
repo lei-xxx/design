@@ -6,6 +6,7 @@ import {ArrowRight, Star, Users, Award, Palette, Layout, Layers, Sparkles, Globe
 import { ShimmerButton } from '../components/ShimmerButton';
 import { PaperDesignBackground } from '../components/PaperDesignBackground';
 import { SplineRobotShowcase } from '../components/SplineRobotShowcase';
+import GradualBlur from '@/components/GradualBlur';
 import { projects } from '@/data/projects';
 import { runCirclePageTransition } from '@/lib/pageTransition';
 import { publicAsset } from '@/lib/utils';
@@ -15,6 +16,7 @@ const HomePage = () => {
   const [backgroundExitProgress, setBackgroundExitProgress] = useState(0);
   const [isMobileTouching, setIsMobileTouching] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [isHeaderBlurVisible, setIsHeaderBlurVisible] = useState(false);
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const servicesCarouselRef = useRef<HTMLDivElement | null>(null);
   const isPageTransitioningRef = useRef(false);
@@ -75,6 +77,44 @@ const HomePage = () => {
       window.removeEventListener('touchstart', pause);
       window.removeEventListener('touchend', resume);
       window.removeEventListener('touchcancel', resume);
+    };
+  }, []);
+
+  useEffect(() => {
+    let frameId = 0;
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+
+    const updateHeaderBlur = () => {
+      if (!desktopQuery.matches) {
+        setIsHeaderBlurVisible(false);
+        return;
+      }
+
+      const navSafeBottom = 112;
+      const contentNodes = Array.from(document.querySelectorAll<HTMLElement>('[data-home-blur-content="true"]'));
+      const hasContentUnderNav = contentNodes.some((node) => {
+        const rect = node.getBoundingClientRect();
+        return rect.top < navSafeBottom && rect.bottom > 0;
+      });
+
+      setIsHeaderBlurVisible(hasContentUnderNav);
+    };
+
+    const onScrollOrResize = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updateHeaderBlur);
+    };
+
+    updateHeaderBlur();
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize);
+    desktopQuery.addEventListener('change', updateHeaderBlur);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', onScrollOrResize);
+      window.removeEventListener('resize', onScrollOrResize);
+      desktopQuery.removeEventListener('change', updateHeaderBlur);
     };
   }, []);
 
@@ -180,12 +220,32 @@ const HomePage = () => {
         speed={isMobileTouching ? 0 : isMobileViewport ? 1.25 : 1}
         maxPixelCount={isMobileViewport ? 720 * 1280 : 1920 * 1080}
       />
+      <GradualBlur
+        target="page"
+        position="top"
+        height="7rem"
+        width="min(1280px, calc(100vw - 4rem))"
+        strength={2.5}
+        divCount={6}
+        curve="bezier"
+        exponential
+        opacity={1}
+        className="hidden lg:block"
+        style={{
+          zIndex: 55,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          opacity: isHeaderBlurVisible ? 1 : 0,
+          transition: 'opacity 180ms ease-out',
+        }}
+      />
       <div className="relative z-10">
       {/* Hero Section - Black Background with Paper Design Shader */}
       <section className="text-white min-h-screen flex items-center relative overflow-hidden">
         <div className="w-full relative z-10 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
           <div className="max-w-7xl mx-auto">
             <motion.div
+              data-home-blur-content="true"
               initial={{ opacity: 0, y: -50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -213,7 +273,7 @@ const HomePage = () => {
       </section>
 
       {/* Services Overview */}
-      <section className="pb-4 pt-14 sm:py-16 lg:py-24">
+      <section data-home-blur-content="true" className="pb-4 pt-14 sm:py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -306,7 +366,7 @@ const HomePage = () => {
       </section>
 
       {/* USP Section */}
-      <section className="pb-12 pt-4 sm:py-16 lg:py-20">
+      <section data-home-blur-content="true" className="pb-12 pt-4 sm:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-center">
             <motion.div
@@ -368,7 +428,7 @@ const HomePage = () => {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-12 sm:py-16 lg:py-20">
+      <section data-home-blur-content="true" className="py-12 sm:py-16 lg:py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 50 }}

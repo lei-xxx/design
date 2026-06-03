@@ -30,7 +30,6 @@ const ProjectDetailPage = () => {
           curve="bezier"
           exponential
           opacity={1}
-          className="lg:hidden"
           style={{ zIndex: 55 }}
         />
         <motion.main
@@ -113,7 +112,6 @@ const ProjectDetailPage = () => {
         curve="bezier"
         exponential
         opacity={1}
-        className="lg:hidden"
         style={{ zIndex: 55 }}
       />
       <motion.main
