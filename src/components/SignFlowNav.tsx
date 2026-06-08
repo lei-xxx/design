@@ -30,10 +30,12 @@ const AnimatedNavLink = ({ href, children, onClick }: { href: string; children: 
 export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowNavProps) {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-[48px]');
   const [menuOrigin, setMenuOrigin] = useState({ x: 0, y: 0, radius: 0 });
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const shapeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastScrollYRef = useRef(0);
   const isNavButtonOnLight = useAdaptiveButtonTone(menuButtonRef, typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches);
 
   const closeMenu = () => setIsOpen(false);
@@ -92,10 +94,43 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
     };
   }, []);
 
+  useEffect(() => {
+    const minDelta = 8;
+    const revealAtTop = 80;
+
+    const handleScrollDirection = () => {
+      const currentScrollY = Math.max(window.scrollY, 0);
+      const delta = currentScrollY - lastScrollYRef.current;
+      const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+
+      if (!isDesktop || isOpen || currentScrollY < revealAtTop) {
+        setIsHeaderHidden(false);
+        lastScrollYRef.current = currentScrollY;
+        return;
+      }
+
+      if (Math.abs(delta) < minDelta) return;
+
+      setIsHeaderHidden(delta > 0);
+      lastScrollYRef.current = currentScrollY;
+    };
+
+    lastScrollYRef.current = window.scrollY;
+    handleScrollDirection();
+
+    window.addEventListener('scroll', handleScrollDirection, { passive: true });
+    window.addEventListener('resize', handleScrollDirection);
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollDirection);
+      window.removeEventListener('resize', handleScrollDirection);
+    };
+  }, [isOpen]);
+
   return (
     <>
     <header
-      className={`sign-flow-header fixed left-1/2 top-6 z-[70] flex w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center px-8 py-4 text-white transition-all duration-300 ease-in-out lg:left-0 lg:top-0 lg:w-full lg:translate-x-0 lg:px-0 lg:py-8 ${headerShapeClass}`}>
+      className={`sign-flow-header ${isHeaderHidden ? 'sign-flow-header-hidden' : ''} fixed left-1/2 top-6 z-[70] flex w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center px-8 py-4 text-white transition-all duration-300 ease-in-out lg:left-0 lg:top-0 lg:w-full lg:translate-x-0 lg:px-0 lg:py-8 ${headerShapeClass}`}>
       <div className="relative z-10 flex w-full items-center justify-between gap-x-8 lg:mx-auto lg:max-w-[1280px] lg:px-8">
         <Link to="/" onClick={closeMenu} className="hidden items-center lg:flex">
           <img src={logo} alt={logoAlt} className="h-[48px] w-auto object-contain" />

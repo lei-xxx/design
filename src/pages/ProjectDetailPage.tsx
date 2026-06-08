@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, FileText, Play, Tag } from 'lucide-react';
+import { ChevronLeft, FileText, Play } from 'lucide-react';
 import GradualBlur from '@/components/GradualBlur';
 import { projects } from '@/data/projects';
 import { runCirclePageTransition } from '@/lib/pageTransition';
@@ -51,7 +51,7 @@ const ProjectDetailPage = () => {
     );
   }
 
-  const projectTags = project.tags ?? [project.category];
+  const projectTags = Array.from(new Set(project.tags ?? [project.category]));
   const goBack = (triggerElement?: HTMLElement, clickPoint?: { x: number; y: number }) => {
     const historyIndex = window.history.state?.idx;
     const navigateBack = () => {
@@ -83,7 +83,7 @@ const ProjectDetailPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black pt-24 text-white xl:pt-36">
+    <div className="project-detail-page relative min-h-screen overflow-hidden bg-black text-white">
       <button
         ref={backButtonRef}
         type="button"
@@ -118,19 +118,39 @@ const ProjectDetailPage = () => {
         initial={isEnteringFromPortfolio ? { opacity: 0, y: 10 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, delay: isEnteringFromPortfolio ? 0.18 : 0 }}
-        className="relative z-10 mx-auto max-w-5xl px-4 pb-20 sm:px-6 lg:px-8 xl:max-w-[1480px]"
+        className="relative z-10 pb-20"
       >
-        <div className="mb-10">
-          <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[#FF5825]">
-            <Tag className="mr-2 h-4 w-4" />
-            {projectTags.map((tag) => (
-              <span key={tag} className="text-sm font-semibold">{tag}</span>
-            ))}
-          </div>
-          <h1 className="text-[32px] font-semibold leading-tight lg:text-5xl">{project.title}</h1>
-        </div>
+        <section className="border-b border-white/10 bg-transparent pb-16 pt-32 text-white lg:pb-24 lg:pt-44 xl:pt-48">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 xl:max-w-[1480px]">
+            <div className="max-w-[980px]">
+              <h1 className="text-[40px] font-medium leading-[0.95] tracking-normal text-white md:text-[58px] lg:text-[72px]">
+                {project.title}
+              </h1>
+            </div>
 
-        <section className="space-y-2">
+            <div className="mt-20 flex flex-wrap items-center gap-4 lg:mt-28">
+              {projectTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex h-11 items-center rounded-full border border-white/40 bg-transparent px-7 !text-[18px] font-semibold leading-none text-white"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-10 max-w-[760px] lg:mt-12">
+              <p className="!text-[18px] font-medium leading-[1.7] tracking-normal text-white md:!text-[20px]">
+                {project.descriptionZh}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="project-gallery"
+          className="mx-auto max-w-5xl scroll-mt-20 space-y-2 px-4 pt-2 sm:px-6 lg:px-8 xl:max-w-[1480px]"
+        >
           {project.media.map((media, mediaIndex) => (
             <article
               key={`${media.type}-${media.src}`}
