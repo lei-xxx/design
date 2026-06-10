@@ -32,8 +32,14 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
   const [isOpen, setIsOpen] = useState(false);
   const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-[48px]');
-  const [menuOrigin, setMenuOrigin] = useState({ x: 0, y: 0, radius: 0 });
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const tabletMenuRef = useRef<HTMLDivElement | null>(null);
+  const tabletPanelRefs = useRef<HTMLElement[]>([]);
+  const tabletItemRefs = useRef<HTMLAnchorElement[]>([]);
+  const tabletCtaRef = useRef<HTMLAnchorElement | null>(null);
+  const tabletAnimationsRef = useRef<Set<Animation>>(new Set());
+  const tabletPhaseRef = useRef<'closed' | 'opening' | 'open' | 'reversing' | 'exiting'>('closed');
+  const tabletCycleRef = useRef(0);
   const shapeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastScrollYRef = useRef(0);
   const isNavButtonOnLight = useAdaptiveButtonTone(menuButtonRef, typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches);
@@ -44,19 +50,14 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
     return location.pathname === href;
   };
 
-  const updateMenuOrigin = () => {
-    const rect = menuButtonRef.current?.getBoundingClientRect();
-    const x = rect ? rect.left + rect.width / 2 : window.innerWidth - 56;
-    const y = rect ? rect.top + rect.height / 2 : 56;
-    const radius = Math.ceil(Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y),
-    ));
-    setMenuOrigin({ x, y, radius });
-  };
   const toggleMenu = () => {
-    updateMenuOrigin();
     setIsOpen(current => !current);
+  };
+  const setTabletPanelRef = (index: number) => (node: HTMLElement | null) => {
+    if (node) tabletPanelRefs.current[index] = node;
+  };
+  const setTabletItemRef = (index: number) => (node: HTMLAnchorElement | null) => {
+    if (node) tabletItemRefs.current[index] = node;
   };
 
   useEffect(() => {
@@ -85,14 +86,6 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
       document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
-
-  useEffect(() => {
-    window.addEventListener('resize', updateMenuOrigin);
-
-    return () => {
-      window.removeEventListener('resize', updateMenuOrigin);
-    };
-  }, []);
 
   useEffect(() => {
     const minDelta = 8;
@@ -125,6 +118,148 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
       window.removeEventListener('scroll', handleScrollDirection);
       window.removeEventListener('resize', handleScrollDirection);
     };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const root = tabletMenuRef.current;
+    const panels = tabletPanelRefs.current.filter(Boolean);
+    const items = tabletItemRefs.current.filter(Boolean);
+    const cta = tabletCtaRef.current;
+    const isTablet = window.matchMedia('(max-width: 1023px)').matches;
+
+    if (!root || !cta || panels.length === 0 || !isTablet) return;
+
+    const ease = {
+      back: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      in: 'cubic-bezier(0.7, 0, 0.84, 0)',
+      soft: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    };
+
+    const remember = (animation: Animation) => {
+      tabletAnimationsRef.current.add(animation);
+      animation.addEventListener('finish', () => tabletAnimationsRef.current.delete(animation), { once: true });
+      animation.addEventListener('cancel', () => tabletAnimationsRef.current.delete(animation), { once: true });
+      return animation.finished.catch(() => {});
+    };
+
+    const cancelRunning = () => {
+      tabletAnimationsRef.current.forEach((animation) => {
+        try {
+          animation.commitStyles();
+        } catch {
+          // Some browsers do not support commitStyles for every animation.
+        }
+        animation.cancel();
+      });
+      tabletAnimationsRef.current.clear();
+    };
+
+    const animateTo = (node: HTMLElement, keyframes: Keyframe[], options: KeyframeAnimationOptions) =>
+      remember(node.animate(keyframes, { fill: 'forwards', easing: ease.soft, ...options }));
+
+    const resetClosed = () => {
+      root.setAttribute('aria-hidden', 'true');
+      root.style.visibility = 'hidden';
+      root.style.pointerEvents = 'none';
+      panels.forEach((panel) => {
+        panel.style.opacity = '1';
+        panel.style.transform = 'translate3d(110%, 0, 0) rotate(0deg)';
+      });
+      items.forEach((item) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-18px)';
+      });
+      cta.style.opacity = '0';
+      cta.style.transform = 'translateY(8px)';
+      tabletPhaseRef.current = 'closed';
+    };
+
+    const showMenu = () => {
+      root.setAttribute('aria-hidden', 'false');
+      root.style.visibility = 'visible';
+      root.style.pointerEvents = 'auto';
+    };
+
+    const openTabletMenu = async () => {
+      const run = ++tabletCycleRef.current;
+      cancelRunning();
+      showMenu();
+      tabletPhaseRef.current = 'opening';
+
+      await Promise.all([
+        ...panels.map((panel, index) =>
+          animateTo(panel, [{ transform: getComputedStyle(panel).transform }, { transform: 'translate3d(0%, 0, 0) rotate(0deg)' }], {
+            duration: 660,
+            delay: index * 90,
+            easing: ease.back,
+          }),
+        ),
+        ...items.map((item, index) =>
+          animateTo(item, [{ opacity: 0, transform: 'translateX(-18px)' }, { opacity: 1, transform: 'translateX(0)' }], {
+            duration: 720,
+            delay: 150 + index * 36,
+          }),
+        ),
+        animateTo(cta, [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], {
+          duration: 360,
+          delay: 430,
+        }),
+      ]);
+
+      if (tabletCycleRef.current === run) tabletPhaseRef.current = 'open';
+    };
+
+    const closeTabletMenu = async () => {
+      const run = ++tabletCycleRef.current;
+      const reversing = tabletPhaseRef.current === 'opening';
+      cancelRunning();
+      tabletPhaseRef.current = reversing ? 'reversing' : 'exiting';
+
+      await Promise.all([
+        ...[...panels].reverse().map((panel, index) =>
+          animateTo(panel, [{ transform: getComputedStyle(panel).transform }, {
+            transform: reversing ? 'translate3d(110%, 0, 0) rotate(0deg)' : `translate3d(${index % 2 === 0 ? -8 : 10}px, 112vh, 0) rotate(${index % 2 === 0 ? -16 : 18}deg)`,
+          }], {
+            duration: reversing ? 430 : 520,
+            delay: index * (reversing ? 26 : 46),
+            easing: ease.in,
+          }),
+        ),
+        ...items.map((item) =>
+          animateTo(item, [{ opacity: getComputedStyle(item).opacity, transform: getComputedStyle(item).transform }, { opacity: 0, transform: 'translateX(-18px)' }], {
+            duration: 200,
+            easing: ease.in,
+          }),
+        ),
+        animateTo(cta, [{ opacity: getComputedStyle(cta).opacity, transform: getComputedStyle(cta).transform }, { opacity: 0, transform: 'translateY(8px)' }], {
+          duration: 160,
+          easing: ease.in,
+        }),
+      ]);
+
+      if (tabletCycleRef.current === run) resetClosed();
+    };
+
+    if (isOpen) {
+      openTabletMenu();
+    } else if (tabletPhaseRef.current === 'closed') {
+      resetClosed();
+    } else {
+      closeTabletMenu();
+    }
+
+    return cancelRunning;
+  }, [isOpen, links.length]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !isOpen) return;
+      setIsOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
   return (
@@ -162,91 +297,48 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
     </header>
 
     <div
-      className={`fixed inset-0 z-[60] bg-black px-5 pb-8 pt-32 text-black transition-all duration-300 md:hidden ${
-        isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
-      }`}
-      style={{
-        clipPath: isOpen
-          ? `circle(${menuOrigin.radius || 1600}px at ${menuOrigin.x || 'calc(100% - 56px)'}px ${menuOrigin.y || 56}px)`
-          : `circle(1px at ${menuOrigin.x || 'calc(100% - 56px)'}px ${menuOrigin.y || 56}px)`,
-        transition: isOpen
-          ? 'clip-path 760ms cubic-bezier(.22,1,.36,1), opacity 180ms ease-out'
-          : 'clip-path 220ms ease-in, opacity 220ms ease-in',
-      }}
-      aria-hidden={!isOpen}
-    >
-      <div
-        className={`mx-auto flex max-w-md flex-col gap-5 transition-all duration-300 ${
-          isOpen ? 'translate-y-0 scale-100 opacity-100 delay-120' : 'translate-y-4 scale-[0.98] opacity-0'
-        }`}
-      >
-        <nav className="rounded-[22px] bg-white p-7 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
-          <div className="space-y-8">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                onClick={closeMenu}
-                className="flex items-center justify-between text-[34px] font-medium uppercase leading-none tracking-[-0.02em] text-black"
-              >
-                <span>{link.label}</span>
-                {isActiveLink(link.href) && <span className="h-2.5 w-2.5 rounded-full bg-black" />}
-              </Link>
-            ))}
-          </div>
-        </nav>
-
-        <Link
-          to="/portfolio"
-          onClick={closeMenu}
-          className="flex h-20 items-center justify-between rounded-[22px] bg-[#FF5825] px-7 text-[28px] font-medium uppercase tracking-[-0.02em] text-white shadow-[0_24px_70px_rgba(255,88,37,0.28)]"
-        >
-          <span>Projects</span>
-          <ArrowUpRight className="h-8 w-8" />
-        </Link>
-      </div>
-    </div>
-
-    <div
-      className={`fixed inset-y-0 right-0 z-[60] hidden w-[48vw] overflow-hidden text-white md:block lg:hidden ${
+      ref={tabletMenuRef}
+      className={`sign-flow-tablet-menu fixed inset-0 z-[60] overflow-hidden text-white lg:hidden ${
         isOpen ? '' : 'pointer-events-none'
       }`}
       aria-hidden={!isOpen}
+      onClick={closeMenu}
     >
       <aside
-        className="flex h-full w-full flex-col justify-between bg-[#111111] px-12 pb-12 pt-40"
-        style={{
-          clipPath: isOpen
-            ? 'circle(140vmax at calc(100% - 68px) 58px)'
-            : 'circle(1px at calc(100% - 68px) 58px)',
-          WebkitClipPath: isOpen
-            ? 'circle(140vmax at calc(100% - 68px) 58px)'
-            : 'circle(1px at calc(100% - 68px) 58px)',
-          opacity: isOpen ? 1 : 0,
-          transition: isOpen
-            ? 'clip-path 760ms cubic-bezier(.22,1,.36,1), -webkit-clip-path 760ms cubic-bezier(.22,1,.36,1), opacity 180ms ease-out'
-            : 'clip-path 220ms ease-in, -webkit-clip-path 220ms ease-in, opacity 220ms ease-in',
-        }}
+        ref={setTabletPanelRef(0)}
+        className="sign-flow-tablet-panel sign-flow-tablet-menu-card bg-[#111111]"
+        aria-label="Tablet menu"
+        onClick={(event) => event.stopPropagation()}
       >
         <nav className="flex flex-col items-start gap-16">
-          {links.map((link) => (
+          {links.map((link, index) => (
             <Link
+              ref={setTabletItemRef(index)}
               key={link.href}
               to={link.href}
               onClick={closeMenu}
-              className="text-[32px] font-medium capitalize leading-none tracking-[-0.0em] text-white"
+              className={`sign-flow-tablet-link text-[32px] font-medium capitalize leading-none tracking-[-0.0em] ${
+                isActiveLink(link.href) ? 'text-white' : 'text-white/45'
+              }`}
             >
               {link.label.toLowerCase()}
             </Link>
           ))}
         </nav>
-
+      </aside>
+      <aside
+        ref={setTabletPanelRef(1)}
+        className="sign-flow-tablet-panel sign-flow-tablet-project-card"
+        aria-label="Project shortcut"
+        onClick={(event) => event.stopPropagation()}
+      >
         <Link
+          ref={tabletCtaRef}
           to="/portfolio"
           onClick={closeMenu}
-          className="flex h-20 items-center justify-between rounded-[18px] bg-[#FF5825] px-7 font-semibold uppercase tracking-[-0.0em] text-white shadow-[0_24px_70px_rgba(255,88,37,0.25)]"
+          className="sign-flow-tablet-cta flex h-20 w-full items-center justify-between rounded-[18px] bg-[#FF5825] px-7 font-semibold capitalize tracking-[-0.0em] text-white shadow-[0_24px_70px_rgba(255,88,37,0.25)]"
         >
-          <span className="!text-[20px] leading-none">Projects</span>
+          <span className="!text-[20px] leading-none">projects</span>
           <ArrowUpRight className="h-9 w-9" />
         </Link>
       </aside>

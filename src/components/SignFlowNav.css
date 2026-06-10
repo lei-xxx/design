@@ -27,6 +27,90 @@
   white-space: nowrap;
 }
 
+@media (max-width: 1023px) {
+  .sign-flow-tablet-menu {
+    visibility: hidden;
+    pointer-events: none;
+    padding: 14px;
+  }
+
+  .sign-flow-tablet-panel {
+    width: 82vw;
+    margin-left: auto;
+    transform: translate3d(110%, 0, 0) rotate(0deg);
+    will-change: transform, opacity;
+  }
+
+  .sign-flow-tablet-menu-card {
+    height: calc((100vh - 36px) * 0.72);
+    min-height: 0;
+    padding: 116px 28px 40px;
+    border-radius: 18px;
+  }
+
+  .sign-flow-tablet-project-card {
+    margin-top: 16px;
+    height: calc((100vh - 36px) * 0.28 - 16px);
+    border-radius: 18px;
+  }
+
+  .sign-flow-tablet-link {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+
+  .sign-flow-tablet-cta {
+    height: 100%;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 767px) {
+  .sign-flow-tablet-menu-card nav {
+    gap: 42px;
+  }
+
+  .sign-flow-tablet-link {
+    font-size: 24px !important;
+    font-weight: 500 !important;
+  }
+
+  .sign-flow-tablet-cta {
+    min-height: 88px;
+    border-radius: 22px;
+  }
+
+  .sign-flow-tablet-project-card {
+    height: 72px !important;
+  }
+
+  .sign-flow-tablet-cta {
+    height: 72px !important;
+    min-height: 72px !important;
+  }
+
+  .sign-flow-tablet-cta span {
+    font-size: 24px !important;
+    font-weight: 500 !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sign-flow-tablet-menu {
+    padding: 18px;
+  }
+
+  .sign-flow-tablet-panel {
+    width: 48vw;
+  }
+
+  .sign-flow-tablet-menu-card {
+    height: calc((100vh - 36px) * 0.72);
+    padding: 160px 48px 56px;
+  }
+}
+
 @media (min-width: 1024px) {
   header.sign-flow-header {
     position: fixed;
