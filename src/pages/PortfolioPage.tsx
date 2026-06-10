@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight, Tag } from 'lucide-react';
@@ -9,11 +9,15 @@ import { ButtonColorful } from '@/components/ui/button-colorful';
 import { projects, type Project } from '@/data/projects';
 import { runCirclePageTransition } from '@/lib/pageTransition';
 import { publicAsset } from '@/lib/utils';
+import './PortfolioPage.css';
 
 const PortfolioPage = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('All');
   const isProjectTransitioningRef = useRef(false);
+  const filterDockRef = useRef<HTMLDivElement | null>(null);
+  const filterItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const filterDockFrameRef = useRef<number | null>(null);
 
   const categories = ['All', 'Mobile Design', 'Web Design', 'Data visualization', 'Motion Effect Design'];
   const allPrioritySlugs = [
@@ -83,6 +87,143 @@ const PortfolioPage = () => {
     animateProjectNavigation(project, triggerElement, clickPoint);
   };
 
+  const setFilterItemRef = (index: number) => (node: HTMLButtonElement | null) => {
+    filterItemRefs.current[index] = node;
+  };
+
+  const resetProjectImageDock = (node: HTMLElement) => {
+    node.style.setProperty('--project-image-dock-x', '0px');
+    node.style.setProperty('--project-image-dock-y', '0px');
+    node.style.setProperty('--project-image-dock-scale', '1');
+  };
+
+  const resetProjectCtaDock = (node: HTMLElement) => {
+    node.style.setProperty('--project-cta-dock-x', '0px');
+    node.style.setProperty('--project-cta-dock-y', '0px');
+    node.style.setProperty('--project-cta-dock-scale', '1');
+  };
+
+  const handleProjectImagePointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const node = event.currentTarget;
+    const rect = node.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = event.clientX - centerX;
+    const deltaY = event.clientY - centerY;
+    const distance = Math.hypot(deltaX, deltaY);
+    const bound = Math.max(rect.width, rect.height) * 0.72;
+    const proximity = Math.max(0, 1 - distance / bound);
+    const x = (deltaX / rect.width) * 16 * proximity;
+    const y = (deltaY / rect.height) * 14 * proximity;
+    const scale = 1 + 0.065 * proximity;
+
+    node.style.setProperty('--project-image-dock-x', `${x.toFixed(2)}px`);
+    node.style.setProperty('--project-image-dock-y', `${y.toFixed(2)}px`);
+    node.style.setProperty('--project-image-dock-scale', scale.toFixed(3));
+  };
+
+  const handleProjectCtaPointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const node = event.currentTarget;
+    const rect = node.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = event.clientX - centerX;
+    const deltaY = event.clientY - centerY;
+    const distance = Math.hypot(deltaX, deltaY);
+    const bound = Math.max(rect.width, rect.height) * 1.25;
+    const proximity = Math.max(0, 1 - distance / bound);
+    const x = (deltaX / rect.width) * 20 * proximity;
+    const y = (deltaY / rect.height) * 11 * proximity;
+    const scale = 1 + 0.085 * proximity;
+
+    node.style.setProperty('--project-cta-dock-x', `${x.toFixed(2)}px`);
+    node.style.setProperty('--project-cta-dock-y', `${y.toFixed(2)}px`);
+    node.style.setProperty('--project-cta-dock-scale', scale.toFixed(3));
+  };
+
+  useEffect(() => {
+    const dock = filterDockRef.current;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    if (!dock) return;
+
+    const setDockState = (node: HTMLButtonElement, x: number, scale: number) => {
+      node.style.setProperty('--filter-dock-x', `${x.toFixed(2)}px`);
+      node.style.setProperty('--filter-dock-scale', scale.toFixed(3));
+    };
+
+    const resetFilters = () => {
+      if (filterDockFrameRef.current !== null) {
+        window.cancelAnimationFrame(filterDockFrameRef.current);
+        filterDockFrameRef.current = null;
+      }
+
+      filterItemRefs.current.forEach((node) => {
+        if (node) setDockState(node, 0, 1);
+      });
+    };
+
+    const updateFilters = (pointerX: number) => {
+      const bound = 150;
+      const maxScale = 1.18;
+      const maxShift = 12;
+
+      filterItemRefs.current.forEach((node) => {
+        if (!node) return;
+
+        const rect = node.getBoundingClientRect();
+        const center = rect.left + rect.width / 2;
+        const distance = center - pointerX;
+        const absDistance = Math.abs(distance);
+
+        if (absDistance >= bound) {
+          setDockState(node, 0, 1);
+          return;
+        }
+
+        const phase = (absDistance / bound) * (Math.PI / 2);
+        const proximity = Math.cos(phase);
+        const direction = distance === 0 ? 0 : distance / absDistance;
+        const scale = 1 + (maxScale - 1) * proximity;
+        const x = direction * maxShift * Math.sin(phase);
+
+        setDockState(node, x, scale);
+      });
+    };
+
+    let pointerX = 0;
+    const handlePointerMove = (event: PointerEvent) => {
+      if (reduceMotion.matches || !finePointer.matches) {
+        resetFilters();
+        return;
+      }
+
+      pointerX = event.clientX;
+      if (filterDockFrameRef.current !== null) return;
+
+      filterDockFrameRef.current = window.requestAnimationFrame(() => {
+        filterDockFrameRef.current = null;
+        updateFilters(pointerX);
+      });
+    };
+
+    dock.addEventListener('pointermove', handlePointerMove);
+    dock.addEventListener('pointerleave', resetFilters);
+    window.addEventListener('resize', resetFilters);
+
+    return () => {
+      dock.removeEventListener('pointermove', handlePointerMove);
+      dock.removeEventListener('pointerleave', resetFilters);
+      window.removeEventListener('resize', resetFilters);
+      resetFilters();
+    };
+  }, [categories.length]);
+
   return (
     <div className="relative overflow-hidden pt-16 bg-black">
       <MinimalHero backgroundOnly disableParticlesOnMobile className="z-0" />
@@ -123,12 +264,13 @@ const PortfolioPage = () => {
       <section className="py-4 lg:py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="overflow-x-auto border-b border-white/20 pb-8 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-auto md:w-4/5 lg:w-full [&::-webkit-scrollbar]:hidden lg:pb-10">
-            <div className="flex w-max snap-x snap-mandatory flex-nowrap items-center gap-5 lg:gap-8">
+            <div ref={filterDockRef} className="flex w-max snap-x snap-mandatory flex-nowrap items-center gap-5 lg:gap-8">
               {categories.map((category, categoryIndex) => (
                 <React.Fragment key={category}>
                   <button
+                    ref={setFilterItemRef(categoryIndex)}
                     onClick={() => setFilter(category)}
-                    className={`shrink-0 snap-start whitespace-nowrap text-[16px] font-normal leading-none transition-colors duration-200 md:text-[20px] lg:text-[clamp(20px,1.25vw,24px)] ${
+                    className={`portfolio-filter-dock-item shrink-0 snap-start whitespace-nowrap text-[16px] font-normal leading-none transition-colors duration-200 md:text-[20px] lg:text-[clamp(20px,1.25vw,24px)] ${
                       filter === category ? 'text-white' : 'text-white/25 hover:text-white/55'
                     }`}
                   >
@@ -166,7 +308,9 @@ const PortfolioPage = () => {
                     <button
                       type="button"
                       aria-label={`View ${project.title} project`}
-	                      className="relative mx-auto block w-full cursor-pointer text-left md:w-4/5 lg:hidden"
+	                      className="portfolio-project-image-dock relative mx-auto block w-full cursor-pointer text-left md:w-4/5 lg:hidden"
+                      onPointerMove={handleProjectImagePointerMove}
+                      onPointerLeave={(event) => resetProjectImageDock(event.currentTarget)}
                       onClick={(event) => openProject(project, event.currentTarget, { x: event.clientX, y: event.clientY })}
                     >
                       <img
@@ -180,7 +324,9 @@ const PortfolioPage = () => {
                     <button
                       type="button"
                       aria-label={`View ${project.title} project`}
-                      className="relative hidden w-full cursor-pointer text-left lg:block"
+                      className="portfolio-project-image-dock relative hidden w-full cursor-pointer text-left lg:block"
+                      onPointerMove={handleProjectImagePointerMove}
+                      onPointerLeave={(event) => resetProjectImageDock(event.currentTarget)}
                       onClick={(event) => openProject(project, event.currentTarget, { x: event.clientX, y: event.clientY })}
                     >
                       <img
@@ -224,7 +370,9 @@ const PortfolioPage = () => {
                       <ButtonColorful
                         type="button"
                         label="View Project"
-                        className="h-12 px-6 text-sm"
+                        className="portfolio-project-cta-dock h-12 px-6 text-sm"
+                        onPointerMove={handleProjectCtaPointerMove}
+                        onPointerLeave={(event) => resetProjectCtaDock(event.currentTarget)}
                         onClick={(event) => openProject(project, event.currentTarget, { x: event.clientX, y: event.clientY })}
                       />
                     </div>

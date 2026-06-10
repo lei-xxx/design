@@ -6,6 +6,16 @@
   transform: translateY(2px);
 }
 
+.sign-flow-logo-link {
+  --logo-dock-x: 0px;
+  --logo-dock-y: 0px;
+  --logo-dock-scale: 1;
+  transform: translate3d(var(--logo-dock-x), var(--logo-dock-y), 0) scale(var(--logo-dock-scale));
+  transform-origin: 50% 50%;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
 .sign-flow-nav-track {
   display: flex;
   flex-direction: column;

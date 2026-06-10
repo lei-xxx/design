@@ -10,6 +10,7 @@ import GradualBlur from '@/components/GradualBlur';
 import { projects } from '@/data/projects';
 import { runCirclePageTransition } from '@/lib/pageTransition';
 import { publicAsset } from '@/lib/utils';
+import './HomePage.css';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -212,6 +213,33 @@ const HomePage = () => {
     });
   };
 
+  const resetHomeButtonDock = (node: HTMLElement) => {
+    node.style.setProperty('--home-button-dock-x', '0px');
+    node.style.setProperty('--home-button-dock-y', '0px');
+    node.style.setProperty('--home-button-dock-scale', '1');
+  };
+
+  const handleHomeButtonPointerMove = (event: React.PointerEvent<HTMLElement>) => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const node = event.currentTarget;
+    const rect = node.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = event.clientX - centerX;
+    const deltaY = event.clientY - centerY;
+    const distance = Math.hypot(deltaX, deltaY);
+    const bound = Math.max(rect.width, rect.height) * 1.15;
+    const proximity = Math.max(0, 1 - distance / bound);
+    const x = (deltaX / rect.width) * 20 * proximity;
+    const y = (deltaY / rect.height) * 11 * proximity;
+    const scale = 1 + 0.085 * proximity;
+
+    node.style.setProperty('--home-button-dock-x', `${x.toFixed(2)}px`);
+    node.style.setProperty('--home-button-dock-y', `${y.toFixed(2)}px`);
+    node.style.setProperty('--home-button-dock-scale', scale.toFixed(3));
+  };
+
   return (
     <div className="relative overflow-x-hidden bg-black">
       <PaperDesignBackground
@@ -263,7 +291,9 @@ const HomePage = () => {
                 <Link
                   to="/portfolio"
                   onClick={(event) => handleMobilePageTransition(event, '/portfolio')}
-                  className="border border-white bg-transparent text-white hover:bg-white hover:text-black rounded-full font-semibold transition-all duration-200 text-center px-12 h-[72px] text-xl lg:text-[1.38rem] flex items-center justify-center w-[calc(100vw-128px)] max-w-none sm:h-20 sm:w-[374px] sm:max-w-[396px] sm:px-14">
+                  onPointerMove={handleHomeButtonPointerMove}
+                  onPointerLeave={(event) => resetHomeButtonDock(event.currentTarget)}
+                  className="home-magnetic-button border border-white bg-transparent text-white hover:bg-white hover:text-black rounded-full font-semibold transition-all duration-200 text-center px-12 h-[72px] text-xl lg:text-[1.38rem] flex items-center justify-center w-[calc(100vw-128px)] max-w-none sm:h-20 sm:w-[374px] sm:max-w-[396px] sm:px-14">
                   View Portfolio
                 </Link>
               </div>
@@ -443,7 +473,13 @@ const HomePage = () => {
               your brand essence and resonate with your audience.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">
-              <Link to="/contact" onClick={(event) => handleMobilePageTransition(event, '/contact')}>
+              <Link
+                to="/contact"
+                onClick={(event) => handleMobilePageTransition(event, '/contact')}
+                onPointerMove={handleHomeButtonPointerMove}
+                onPointerLeave={(event) => resetHomeButtonDock(event.currentTarget)}
+                className="home-magnetic-button inline-flex w-full md:w-auto"
+              >
                 <ShimmerButton className="shadow-2xl rounded-full border-[#dedede] bg-[linear-gradient(110deg,#dedede,45%,#ffffff,55%,#dedede)] hover:bg-[linear-gradient(110deg,#dedede,45%,#ffffff,55%,#dedede)] transition-all duration-200 w-full text-black md:w-auto">
                   <span className="text-center text-sm leading-none font-semibold tracking-tight whitespace-pre-wrap text-black lg:text-base flex items-center justify-center">
                     Let's Collaborate
@@ -454,7 +490,9 @@ const HomePage = () => {
               <Link
                 to="/portfolio"
                 onClick={(event) => handleMobilePageTransition(event, '/portfolio')}
-                className="border border-white bg-transparent text-white hover:bg-white hover:text-black px-8 h-12 flex items-center justify-center rounded-full font-semibold transition-all duration-200 text-center w-full md:w-auto">
+                onPointerMove={handleHomeButtonPointerMove}
+                onPointerLeave={(event) => resetHomeButtonDock(event.currentTarget)}
+                className="home-magnetic-button border border-white bg-transparent text-white hover:bg-white hover:text-black px-8 h-12 flex items-center justify-center rounded-full font-semibold transition-all duration-200 text-center w-full md:w-auto">
 
                 View My Work
               </Link>

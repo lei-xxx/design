@@ -33,6 +33,8 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
   const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-[48px]');
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const desktopLogoRef = useRef<HTMLAnchorElement | null>(null);
+  const desktopLogoFrameRef = useRef<number | null>(null);
   const tabletMenuRef = useRef<HTMLDivElement | null>(null);
   const tabletPanelRefs = useRef<HTMLElement[]>([]);
   const tabletItemRefs = useRef<HTMLAnchorElement[]>([]);
@@ -119,6 +121,83 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
       window.removeEventListener('resize', handleScrollDirection);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    const logo = desktopLogoRef.current;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+
+    if (!logo) return;
+
+    const setDockState = (x: number, y: number, scale: number) => {
+      logo.style.setProperty('--logo-dock-x', `${x.toFixed(2)}px`);
+      logo.style.setProperty('--logo-dock-y', `${y.toFixed(2)}px`);
+      logo.style.setProperty('--logo-dock-scale', scale.toFixed(3));
+    };
+
+    const resetLogo = () => {
+      if (desktopLogoFrameRef.current !== null) {
+        window.cancelAnimationFrame(desktopLogoFrameRef.current);
+        desktopLogoFrameRef.current = null;
+      }
+
+      setDockState(0, 0, 1);
+    };
+
+    const updateLogo = (pointerX: number, pointerY: number) => {
+      const bound = 190;
+      const maxScale = 1.28;
+      const maxShift = 10;
+      const rect = logo.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const distanceX = pointerX - centerX;
+      const distanceY = pointerY - centerY;
+      const distance = Math.hypot(distanceX, distanceY);
+
+      if (distance >= bound) {
+        setDockState(0, 0, 1);
+        return;
+      }
+
+      const phase = (distance / bound) * (Math.PI / 2);
+      const proximity = Math.cos(phase);
+      const scale = 1 + (maxScale - 1) * proximity;
+      const directionX = distance === 0 ? 0 : distanceX / distance;
+      const directionY = distance === 0 ? 0 : distanceY / distance;
+
+      setDockState(directionX * maxShift * proximity, directionY * maxShift * proximity, scale);
+    };
+
+    let pointerX = 0;
+    let pointerY = 0;
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!desktopQuery.matches || reduceMotion.matches) {
+        resetLogo();
+        return;
+      }
+
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      if (desktopLogoFrameRef.current !== null) return;
+
+      desktopLogoFrameRef.current = window.requestAnimationFrame(() => {
+        desktopLogoFrameRef.current = null;
+        updateLogo(pointerX, pointerY);
+      });
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerleave', resetLogo);
+    window.addEventListener('resize', resetLogo);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerleave', resetLogo);
+      window.removeEventListener('resize', resetLogo);
+      resetLogo();
+    };
+  }, []);
 
   useEffect(() => {
     const root = tabletMenuRef.current;
@@ -267,7 +346,7 @@ export default function SignFlowNav({ logo, logoAlt = 'Logo', links }: SignFlowN
     <header
       className={`sign-flow-header ${isHeaderHidden ? 'sign-flow-header-hidden' : ''} fixed left-1/2 top-6 z-[70] flex w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center px-8 py-4 text-white transition-all duration-300 ease-in-out lg:left-0 lg:top-0 lg:w-full lg:translate-x-0 lg:px-0 lg:py-8 ${headerShapeClass}`}>
       <div className="relative z-10 flex w-full items-center justify-between gap-x-8 lg:mx-auto lg:max-w-[1280px] lg:px-8">
-        <Link to="/" onClick={closeMenu} className="hidden items-center lg:flex">
+        <Link ref={desktopLogoRef} to="/" onClick={closeMenu} className="sign-flow-logo-link hidden items-center lg:flex">
           <img src={logo} alt={logoAlt} className="h-[48px] w-auto object-contain" />
         </Link>
 
